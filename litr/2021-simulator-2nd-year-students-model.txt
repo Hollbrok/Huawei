@@ -1,0 +1,162 @@
+// RV32I
+
+constexpr size_t kPhysMemSize = ...;
+constexpr size_t kInsnSize = 4;
+
+typedef uint32_t PhysAddr;
+typedef uint32_t VirtAddr;
+typedef uint32_t RegValue;
+typedef uint32_t EncodedInsn;
+
+enum RegId
+{
+    kX0,
+	kX1,
+	...
+	kX31
+	kRegIdZero = kX0,
+    kRegFileGprSize = 32,
+};
+
+
+template<int hi, int lo, class T = RegId>
+T getBits(T value)
+{
+    return /// 
+}
+
+class PhysMemory
+{
+    char x[kPhysMemSize];
+public:
+    bool write(PhysAddr addr, size_t size, RegValue value);
+	bool read(PhysAddr addr, size_t size, RegValue* value);
+};
+
+enum InsnClass : uint8_t; // ADD, ADDI, OR, ORI, ...
+
+class Instruction
+{
+public:
+    Instruction(EncodedInsn insn, RegId pc)
+	{
+	    // TODO: decode format before individual instructions
+	    // decoder is is the only place where raw constants are acceptable(!)
+	    switch (insn & 0x7F)
+		{
+		case 0:
+		    break;
+		// R-format insns
+		case 0b0110011:
+		    m_rd = getBits<11, 7>(insn);
+			m_rs1 = getBits<19, 15>(insn);
+			m_rs2 = getBits<24, 20>(insn);
+			
+			auto funct3 = getBits<14, 12>(insn);
+			auto funct7 = getBits<31, 25>(insn);
+			
+			if (funct3 == 0 && funct7 == 0)
+			{
+			    m_insnClass = kInsnAdd;
+				m_executor = &executeAdd;
+			}
+			else if (...)
+			{
+			}
+			else
+				assert (0);
+		    break;
+		case 0b1100011: // BEQ/BNE
+		    m_rd = kRegIdZero;
+			m_rs1 = getBits<19, 15>(insn);
+			m_rs2 = getBits<24, 20>(insn);
+			m_imm = ...
+			
+			
+			auto funct3 = getBits<14, 12>(insn);
+			
+			m_imm = m_imm + pc;
+			
+			if (funct3 == 0)
+			{
+			    m_insnClass = kInsnBeq;
+				m_executor = &executeBeq;
+				
+			}
+			else if (...)
+			{
+			}
+			else
+				assert (0);
+		    break;
+		}
+	}
+	
+	Executor executor() const; 
+	
+private:
+    Executor m_executor;
+    InsnClass m_insnClass;
+	RegId m_rd, m_rs1, m_rs2;
+	RegValue m_imm;
+
+};
+
+class Hart
+{
+public:
+    RegValue getReg(RegId id) const {return m_regs[id]}
+	
+	void setReg(RegId id, RegValue value) {m_regs[id] = value;}
+	
+	RegValue getPc() const {return m_pc;}
+	
+	void branch(RegValue target) const {return m_nextPc = target;}
+	
+    bool execute();
+private:
+    RegValue m_regs[kRegFileGprSize];
+	RegValue m_pc;
+	RegValue m_nextPc;
+	PhysMemory& m_physMemory;
+};
+
+
+bool Hart::execute()
+{
+    while(1)
+    {
+		EncodedInsn insnCode{};
+        if (!m_physMemory->read(m_pc, kInsnSize, &insnCode))
+		    // TODO: exception
+		    return false;
+		
+		Instruction insn(insnCode);
+		
+		m_nextPc = m_pc + kInsnSize;
+		insn.execute(this, insn);
+		m_pc = m_nextPc;
+    }
+}
+
+
+void executeAdd(Hart* hart, const Instruction& insn)
+{
+    auto rs1value = hart->getReg(insn.rs1());
+	auto rs2value = hart->getReg(insn.rs2());
+	
+	auto result = rs1value + rs2value;
+	
+	hart->setReg(insn.rd(), result);
+}
+
+void executeBeq(Hart* hart, const Instruction& insn)
+{
+    auto rs1value = hart->getReg(insn.rs1());
+	auto rs2value = hart->getReg(insn.rs2());
+	
+	if (rs1value == rs2value)
+	    hart->branch(insn.imm());
+	
+	hart->setReg(insn.rd(), result);
+}

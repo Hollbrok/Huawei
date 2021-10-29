@@ -1,6 +1,19 @@
 #ifndef LIBS_H_INC
 #define LIBS_H_INC
 
+
+
+////////
+
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <iostream>
+
+///////
+
 #ifndef _GNU_SOURCE
     #define _GNU_SOURCE
 #endif 
@@ -11,9 +24,6 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <limits.h>
 #include <errno.h>
 
