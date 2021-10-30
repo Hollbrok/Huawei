@@ -11,10 +11,41 @@ class Instruction;
 
 typedef void (*Executor)(Hardware* hart, const Instruction& insn);
 
-enum InsnClass : uint8_t
+enum InsnClass : uint8_t //256 instruction are possible
 {
-    kInsnAdd,
-    kInsnBeq,
+    kInsnAdd,		//
+	kInsnSub,
+	kInsnSll,
+	kInsnSlt,
+	kInsnSltu,
+	kInsnXor,
+	kInsnSrl,
+	kInsnSra,
+	kInsnOr,
+	kInsnAnd,
+    kInsnBeq, 		//
+	kInsnBne,
+	kInsnBlt,
+	kInsnBge,
+	kInsnBltu,
+	kInsnBgeu,
+	kInsnLb,		//
+	kInsnLh,
+	kInsnLw,
+	kInsnLbu,
+	kInsnLhu,
+	kInsnEcall,		//
+	kInsnEbreak,
+	kInsnSb,		//
+	kInsnSh,
+	kInsnSw,
+	kInsnAddi,		//
+	kInsnSlti,
+	kInsnSltiu,
+	kInsnXori,
+	kInsnOri,
+	kInsnAndi,
+	kInsnJalr		//
 };
 
 template<int hi,int lo, class T = RegValue>
@@ -33,63 +64,7 @@ private:
 
 public:
 
-    Instruction(EncodedInsn insn, RegValue pc)
-	{
-	    // TODO: decode format before individual instructions
-	    // decoder is is the only place where raw constants are acceptable(!)
-	    switch (insn & 0x7F)
-		{
-		case 0:
-		    break;
-		// R-format insns
-		case 0b0110011:
-        {
-		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
-			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
-			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
-			
-			auto funct3 = getBits<14, 12>(insn);
-			auto funct7 = getBits<31, 25>(insn);
-			
-			if (funct3 == 0 && funct7 == 0) // ADD
-			{
-				std::cout << "ADD FINDED\n";
-			    insnType_ = kInsnAdd;
-				//executor_ = &executeAdd;
-			}
-			//else if (...)
-			//{
-			//}
-			else
-				assert (0);
-		    break;
-        }
-        case 0b1100011: // BEQ/BNE
-		{
-            rd_  = static_cast<RegId> (kRegIdZero);
-			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
-			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
-			//imm_ = ...;
-			
-			
-			auto funct3 = getBits<14, 12>(insn);
-			
-			imm_ = imm_ + pc;
-			
-			if (funct3 == 0)
-			{
-			    insnType_ = kInsnBeq;
-				//executor_ = &executeBeq;
-			}
-			/*else if (...)
-			{
-			}*/
-			else
-				assert (0);
-		    break;
-        }
-		}
-	}
+    Instruction(EncodedInsn insn, RegValue pc);
 
 // GETTERS
 
