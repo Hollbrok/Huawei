@@ -30,24 +30,31 @@ int main(int argc, char *argv[])
 
     PhysMem physMem{};
 
-    EncodedInsn addInsn = 0b0110011;
+    EncodedInsn begInsn = 0b00000000100101000000010001100011;
+    EncodedInsn add1    = 0b00000000000100001000000010110011;
+    EncodedInsn add2    = 0b00000000000100010000000110110011;
 
-    physMem.write(0, addInsn);
+    physMem.write(0, begInsn);
+    physMem.write(4, add1);
+    physMem.write(8, add2);
 
     RegValue retval;
-    physMem.read(0, &retval);
 
     //std::cout << "T write:" << addInsn;
     //std::cout << "\nT read : " << retval << std::endl;
 
     Hardware hardWare{&physMem};
-    hardWare.setReg(kX0, 10);
+    hardWare.setReg(kX1, 2);
+    hardWare.setReg(kX2, 5);
+    hardWare.setReg(kX8, 11);
+    hardWare.setReg(kX9, 11);
+
 
     auto result = hardWare.execute();
 
     std::cout << "result of execute() = " << result << std::endl; 
 
-    std::cout << "kX0 = " << hardWare.getReg(kX0) << std::endl;
+    std::cout << "kX3 = " << hardWare.getReg(kX3) << std::endl;
 
 
     exit(EXIT_SUCCESS);

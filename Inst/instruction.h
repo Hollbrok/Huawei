@@ -45,13 +45,29 @@ enum InsnClass : uint8_t //256 instruction are possible
 	kInsnXori,
 	kInsnOri,
 	kInsnAndi,
+	kInsnJal,		//
 	kInsnJalr		//
 };
 
 template<int hi,int lo, class T = RegValue>
 T getBits(T value)
 {
-    return (((value >> lo) << lo) << (sizeof(T) * 8 - hi - 1)) >> (sizeof(T) * 8 - hi - 1); 
+	auto x1 = value << (sizeof(T) * 8 - hi - 1);
+	auto x2 = x1 >> (sizeof(T) * 8 - hi - 1);
+	auto x3 = x2 >> lo;
+	/*auto x1 = ((value >> lo) << lo);
+	auto x2 = (x1 << (sizeof(T) * 8 - hi - 1));
+	auto x3 = x2 >> (sizeof(T) * 8 - hi - 1);
+	
+	std::bitset<32> x1_b(x1);
+	std::bitset<32> x2_b(x2);
+	std::bitset<32> x3_b(x3);
+	std::cout << "x1_b =   " << x1_b;
+	std::cout << "\nx2_b =   " << x2_b;
+	std::cout << "\nx3_b =   " << x3_b << std::endl;
+*/
+
+    return x3; 
 }
 
 class Instruction
@@ -87,6 +103,10 @@ public:
 		{
 		case kInsnAdd:
 			executeAdd(hardw);
+			break;
+		case kInsnBeq:
+			std::cout << "type of insn = BEQ\n";
+			executeBeq(hardw);
 			break;
 		default:
 			std::cout << "default insn Type\n";

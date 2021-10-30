@@ -5,6 +5,8 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 {
 	    // TODO: decode format before individual instructions
 	    // decoder is is the only place where raw constants are acceptable(!)
+
+		std::cout << "pc = " << pc << std::endl;
 	    switch (insn & 0x7F) /* 1st seven bits*/
 		{
 		case 0:
@@ -76,19 +78,50 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
         }
         case 0b1100011: /* PC (Branch)*/
 		{
-		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
+
+			/*std::bitset<32> insn_b(insn);
+			std::cout << "insn_b = " << insn_b << std::endl;
+			*/
+
+			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
 
-			imm_ =  getBits<11, 8>(insn) << 1 + getBits<7, 7>(insn) << 11 
-				  + getBits<30, 25>(insn) << 5 + getBits<31, 31>(insn) << 12;
+			/*std::bitset<5> rd_b(insn);
+			std::cout << "rd_b = " << rd_b << std::endl;
+
+			std::cout << "rs1, rs2, rd= " << rs1_ << " " << rs2_ << " " << rd_ << std::endl;
+			*/
+
+			auto testval1 = getBits<11, 8>(insn) << 1;
+			//std::bitset<5> testval1_b(testval1);
+			//std::cout << "testval1_b = " << testval1_b << std::endl;
+
+			auto testval2 = getBits<7, 7>(insn) << 11;
+			//std::bitset<5> testval2_b(testval2);
+			//std::cout << "testval2_b = " << testval2_b << std::endl;
+
+			auto testval3 = getBits<30, 25>(insn) << 5;
+			//std::bitset<5> testval3_b(testval3);
+			//std::cout << "testval3_b = " << testval3_b << std::endl;
+
+
+			auto testval4 = getBits<31, 31>(insn) << 12;
+			//std::bitset<5> testval4_b(testval4);
+			//std::cout << "testval4_b = " << testval4_b << std::endl;
 			
+
+			imm_ = testval1 + testval2 + testval3 + testval4;
+			
+			std::bitset<13> imm_b(imm_);
+			//std::cout << "imm_b = " << imm_b << std::endl; 
+
 			auto funct3 = getBits<14, 12>(insn);
-			
-			//imm_ = imm_ + pc;
 			
 			if (funct3 == 0b000)
 			{
+				//std::cout<< "Beq finded\n";
+
 			    insnType_ = kInsnBeq;
 			}
 			else if (funct3 == 0b001)
@@ -194,7 +227,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			else
 				assert (0 && "Undefinied type");
 		}
-		case 0b1100111:
+		case 0b1101111:
 		{
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
@@ -209,16 +242,17 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			//imm_ = imm_ + pc; //!!!!!!!!
 			
 			if (funct3 == 0b000)
-			    insnType_ = kInsnJalr;
+			    insnType_ = kInsnJal;
 			else 
 				assert (0 && "Undefinied funct3 for instruction");
 		    break;
 		}
-		case 0b1101111:
+		case 0b1100111:
 		{
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
-
-			imm_ = getBits<31, 12>(insn) ;
+			rs1_ = static_cast<RegId> (getBits<15, 19>(insn));
+			imm_ = getBits<31, 20>(insn) ;
+			// +pc
 			
 			insnType_ = kInsnJalr;
 		    break;
@@ -240,11 +274,14 @@ void Instruction::executeAdd(Hardware* harw)
 
 void Instruction::executeBeq(Hardware* harw)
 {
+	std::cout << "rs1, rs2 = " << rs1_ << " " << rs2_ << std::endl;
     auto rs1value = harw->getReg(rs1_);
 	auto rs2value = harw->getReg(rs2_);
 	
+	std::cout << "imm = " << imm_ << std::endl;
+
 	if (rs1value == rs2value)
-	    harw->branch(imm_ + harw->pc()); // + pc_
+	    harw->branch(imm_); // + pc_
 	
 	//harw->setReg(insn.rd(), result);
 }

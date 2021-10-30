@@ -27,6 +27,7 @@ bool Hardware::execute()
 		nextPc_ = pc_ + kInsnSize;
 		insn.executor(this);
 		pc_ = nextPc_; 
+		std::cout << "after execute inst pc = " << pc_ << std::endl;
     }
 
     return true;

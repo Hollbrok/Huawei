@@ -14,6 +14,9 @@
 
 #include <assert.h>
 
+#include <bitset>
+
+
 ///////
 
 #ifndef _GNU_SOURCE
