@@ -18,7 +18,7 @@ bool PhysMem::write(PhysAddr addr, size_t size, RegValue value)
     if (addr + size > kPhysMemSize)
     {
         DEBPRINT("address + size of value > kPhysMemSize\n"
-                 "%zu + %zu  > %zu ", addr, size, kPhysMemSize)
+                 "%zu + %zu  > %zu\n", addr, size, kPhysMemSize)
         return 1;
     }
 

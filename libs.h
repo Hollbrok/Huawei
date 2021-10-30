@@ -12,6 +12,8 @@
 
 #include <iostream>
 
+#include <assert.h>
+
 ///////
 
 #ifndef _GNU_SOURCE

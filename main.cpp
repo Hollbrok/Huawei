@@ -1,8 +1,10 @@
 #include "libs.h"
 #include "debug.h"
-
+#include "test.h"
 
 #include "PhysMem/physMem.h"
+#include "Hardware/hardware.h"
+#include "Inst/instruction.h"
 
 constexpr int MAX_FN_SIZE = 20;
 
@@ -20,26 +22,28 @@ int main(int argc, char *argv[])
 
     DEBPRINT("name of file: %s\n", fileName)
 
-    PhysMem virMem{};
+    if (NEED_TEST)
+        TEST_MEM();
 
-    uint32_t testNum = 6666;
+    auto retval = getBits<0, 0, RegValue>(15);
+    std::cout << "retval = " << retval << std::endl;
 
-    virMem.write(0, 4,testNum);
-    virMem.write(4, 4,testNum + 1u);
-    virMem.write(8, 4,testNum + 2u);
+    retval = getBits<1, 0, RegValue>(15);
+    std::cout << "retval = " << retval << std::endl;
 
-    uint32_t readVal = 0;
+    retval = getBits<2, 0, RegValue>(15);
+    std::cout << "retval = " << retval << std::endl;
 
-    virMem.read(0, sizeof(uint32_t), &readVal);
-    std::cout << "readVal = " << readVal << std::endl;
-    
-    virMem.read(4, 4, &readVal);
-    std::cout << "readVal = " << readVal << std::endl;
+    retval = getBits<3, 0, RegValue>(15);
+    std::cout << "retval = " << retval << std::endl;
 
-    virMem.read(8, 4, &readVal);
-    std::cout << "readVal = " << readVal << std::endl;
+    retval = getBits<4, 0, RegValue>(15);
+    std::cout << "retval = " << retval << std::endl;
 
-    //printf("testNum = %zu\n", readVal);
+    retval = getBits<16, 5, RegValue>(15);
+    std::cout << "retval = " << retval << std::endl;
+
+
 
     exit(EXIT_SUCCESS);
 }
