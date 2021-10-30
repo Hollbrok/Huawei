@@ -5,7 +5,8 @@
 #include "../debug.h"
 #include "../common.h"
 
-class PhysMemory;
+#include "../Inst/instruction.h"
+#include "../PhysMem/physMem.h"
 
 class Hardware
 {
@@ -13,9 +14,11 @@ private:
     RegValue regs_[kRegFileGprSize];
 	RegValue pc_;
 	RegValue nextPc_;
-	PhysMemory& physMemory_; // & => *
+	PhysMem *physMem_; // & => *
 
 public:
+
+	Hardware(PhysMem *physMem);
 
 // GETTERS
 

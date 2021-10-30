@@ -8,7 +8,7 @@
 
 #else
 
-#define DEBUG_REGIME 1
+#define DEBUG_REGIME 0
 
 #endif
 

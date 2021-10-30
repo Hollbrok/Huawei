@@ -47,6 +47,7 @@ enum RegId
 	kX31,
 	kRegIdZero = kX0,
     kRegFileGprSize = 32,
+    kErrVal = -1,
 };
 
 

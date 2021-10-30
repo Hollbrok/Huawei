@@ -13,12 +13,12 @@ class PhysMem
 {
 private:
 
-    char mem_[kPhysMemSize];
+    char mem_[kPhysMemSize] = {};
 
 public:
 
-    bool write(PhysAddr addr, size_t size, RegValue value);
-	bool read(PhysAddr addr, size_t size, RegValue* value);
+    bool write(PhysAddr addr, RegValue value, size_t size = kInsnSize);
+	bool read(PhysAddr addr, RegValue* value, size_t size = kInsnSize);
 };
 
 #endif

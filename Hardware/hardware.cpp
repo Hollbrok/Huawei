@@ -1,19 +1,32 @@
 #include "hardware.h"
 
+Hardware::Hardware(PhysMem *physMem) :
+	regs_    {},
+	pc_      {0},
+	nextPc_  {0},
+	physMem_ {physMem}
+{
+}
+
 bool Hardware::execute()
 {
-    while(false)
+    while(true)
     {
-		/*EncodedInsn insnCode{};
-        if (!physMemory_->read(pc_, kInsnSize, &insnCode))
-		    // TODO: exception
+		EncodedInsn insnCode{};
+
+        if (physMem_->read(pc_, &insnCode)) // 3rd arg = kInsnSize
+		{    // TODO: exception
 		     return false;
+		}
+
+		if (insnCode == 0) /* no more commands */
+			return true;
 		
-		Instruction insn(insnCode);
-		
+		Instruction insn(insnCode, pc_);
+
 		nextPc_ = pc_ + kInsnSize;
-		insn.execute(this, insn);
-		pc_ = nextPc_; */
+		insn.executor(this);
+		pc_ = nextPc_; 
     }
 
     return true;

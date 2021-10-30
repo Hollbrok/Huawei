@@ -5,6 +5,7 @@
 #include "../debug.h"
 #include "../common.h"
 
+
 class Hardware;
 class Instruction;
 
@@ -14,7 +15,6 @@ enum InsnClass : uint8_t
 {
     kInsnAdd,
     kInsnBeq,
-
 };
 
 template<int hi,int lo, class T = RegValue>
@@ -27,13 +27,13 @@ class Instruction
 {
 private:
     Executor executor_;
-    InsnClass insnClass_;
+    InsnClass insnType_;
 	RegId rd_, rs1_, rs2_;
 	RegValue imm_;
 
 public:
 
-    Instruction(EncodedInsn insn, RegId pc)
+    Instruction(EncodedInsn insn, RegValue pc)
 	{
 	    // TODO: decode format before individual instructions
 	    // decoder is is the only place where raw constants are acceptable(!)
@@ -44,16 +44,17 @@ public:
 		// R-format insns
 		case 0b0110011:
         {
-		    rd_  = static_cast<RegId> (getBits<11, 7>(insn));
+		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
 			
 			auto funct3 = getBits<14, 12>(insn);
 			auto funct7 = getBits<31, 25>(insn);
 			
-			if (funct3 == 0 && funct7 == 0)
+			if (funct3 == 0 && funct7 == 0) // ADD
 			{
-			    insnClass_ = kInsnAdd;
+				std::cout << "ADD FINDED\n";
+			    insnType_ = kInsnAdd;
 				//executor_ = &executeAdd;
 			}
 			//else if (...)
@@ -77,7 +78,7 @@ public:
 			
 			if (funct3 == 0)
 			{
-			    insnClass_ = kInsnBeq;
+			    insnType_ = kInsnBeq;
 				//executor_ = &executeBeq;
 			}
 			/*else if (...)
@@ -98,9 +99,26 @@ public:
 
     RegValue imm() const {return imm_;}
 
+	InsnClass insn() const { return insnType_;}
+
 // OTHER
 
-	Executor executor() const; 
+	void executeAdd(Hardware* harw);
+	void executeBeq(Hardware* harw);
+
+	void executor(Hardware* hardw) 
+	{
+		switch (insnType_)
+		{
+		case kInsnAdd:
+			executeAdd(hardw);
+			break;
+		default:
+			std::cout << "default insn Type\n";
+			break;
+		}
+	} 
+
 };
 
 #endif 

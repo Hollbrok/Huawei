@@ -1,23 +1,25 @@
 #include "instruction.h"
 #include "../Hardware/hardware.h"
 
-void executeAdd(Hardware* harw, const Instruction& insn)
+void Instruction::executeAdd(Hardware* harw)
 {
-    auto rs1value = harw->getReg(insn.rs1());
-	auto rs2value = harw->getReg(insn.rs2());
+    auto rs1value = harw->getReg(rs1_);
+	auto rs2value = harw->getReg(rs2_);
 	
 	auto result = rs1value + rs2value;
 	
-	harw->setReg(insn.rd(), result);
+	std::cout << "result in ADD = " << result << std::endl;
+
+	harw->setReg(rd_, result);
 }
 
-void executeBeq(Hardware* harw, const Instruction& insn)
+void Instruction::executeBeq(Hardware* harw)
 {
-    auto rs1value = harw->getReg(insn.rs1());
-	auto rs2value = harw->getReg(insn.rs2());
+    auto rs1value = harw->getReg(rs1_);
+	auto rs2value = harw->getReg(rs2_);
 	
 	if (rs1value == rs2value)
-	    harw->branch(insn.imm());
+	    harw->branch(imm_);
 	
 	//harw->setReg(insn.rd(), result);
 }

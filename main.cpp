@@ -23,26 +23,31 @@ int main(int argc, char *argv[])
     DEBPRINT("name of file: %s\n", fileName)
 
     if (NEED_TEST)
+    {
         TEST_MEM();
+        TEST_GETBITS();
+    }
 
-    auto retval = getBits<0, 0, RegValue>(15);
-    std::cout << "retval = " << retval << std::endl;
+    PhysMem physMem{};
 
-    retval = getBits<1, 0, RegValue>(15);
-    std::cout << "retval = " << retval << std::endl;
+    EncodedInsn addInsn = 0b0110011;
 
-    retval = getBits<2, 0, RegValue>(15);
-    std::cout << "retval = " << retval << std::endl;
+    physMem.write(0, addInsn);
 
-    retval = getBits<3, 0, RegValue>(15);
-    std::cout << "retval = " << retval << std::endl;
+    RegValue retval;
+    physMem.read(0, &retval);
 
-    retval = getBits<4, 0, RegValue>(15);
-    std::cout << "retval = " << retval << std::endl;
+    //std::cout << "T write:" << addInsn;
+    //std::cout << "\nT read : " << retval << std::endl;
 
-    retval = getBits<16, 5, RegValue>(15);
-    std::cout << "retval = " << retval << std::endl;
+    Hardware hardWare{&physMem};
+    hardWare.setReg(kX0, 10);
 
+    auto result = hardWare.execute();
+
+    std::cout << "result of execute() = " << result << std::endl; 
+
+    std::cout << "kX0 = " << hardWare.getReg(kX0) << std::endl;
 
 
     exit(EXIT_SUCCESS);
