@@ -14,15 +14,15 @@ typedef void (*Executor)(Hardware* hart, const Instruction& insn);
 enum InsnClass : uint8_t //256 instruction are possible
 {
 /* + */ 	kInsnAdd,		/* 0b0110011 */
-/*   */		kInsnSub,
+/* - */		kInsnSub,
 /* + */		kInsnSll,
 /*   */		kInsnSlt,
 /*   */		kInsnSltu,
-/*   */		kInsnXor,
+/* - */		kInsnXor,
 /* + */		kInsnSrl,
 /* + */		kInsnSra,
-/*   */		kInsnOr,
-/*   */		kInsnAnd,
+/* - */		kInsnOr,
+/* - */		kInsnAnd,
 /* + */		kInsnBeq, 		/*/ 0b1100011 */
 /*   */		kInsnBne,
 /*   */		kInsnBlt,
@@ -99,17 +99,23 @@ public:
 	const char* fromTypeToStr(InsnClass type);
 
 	void executeAdd(Hardware *harw); 	/* + */
+	void executeSll(Hardware *harw);	/* + */
+	void executeSrl(Hardware *harw);	/* + */
+	void executeSra(Hardware *harw);	/* + */
+	void executeSub(Hardware *harw);
+	void executeXor(Hardware *harw);
+	void executeOr (Hardware *harw);
+	void executeAnd(Hardware *harw);
+
 	void executeBeq(Hardware *harw); 	/* + */
 
-	void executeAddi(Hardware *harw); 	/* + */
 
+
+	void executeAddi(Hardware *harw); 	/* + */
 	void executeSlli(Hardware *harw);	/* + */
 	void executeSrli(Hardware *harw);	/* + */
 	void executeSrai(Hardware *harw);	/* + */
 
-	void executeSll(Hardware *harw);	/* + */
-	void executeSrl(Hardware *harw);	/* + */
-	void executeSra(Hardware *harw);	/* + */
 
 	void executor(Hardware* hardw);
 

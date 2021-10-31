@@ -274,6 +274,8 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		}
 	}
 
+//////////////////////////////////////////////////////////////////////////
+
 void Instruction::executeAdd(Hardware *harw)
 {		
 	harw->setReg(rd_, harw->getReg(rs1_) + harw->getReg(rs2_));
@@ -289,6 +291,8 @@ void Instruction::executeAddi(Hardware *harw)
 {	
 	harw->setReg(rd_, harw->getReg(rs1_) + imm_);	
 }
+
+//////////////////////////////////////////////////////////////////////////
 
 void Instruction::executeSlli(Hardware *harw)
 {
@@ -310,22 +314,49 @@ void Instruction::executeSrai(Hardware *harw)
 		harw->setReg(rd_, static_cast<RegValue>( static_cast<int32_t>(harw->getReg(rs1_)) >> imm_ ));
 }
 
+//////////////////////////////////////////////////////////////////////////
+
 void Instruction::executeSll(Hardware *harw)
 {
-	harw->setReg(rd_, harw->getReg(rs1_) << rs2_);
+	harw->setReg(rd_, harw->getReg(rs1_) << harw->getReg(rs2_));
 }	
+
 void Instruction::executeSrl(Hardware *harw)
 {
-	harw->setReg(rd_, harw->getReg(rs1_) >> rs2_);	
+	harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));	
 }
 
 void Instruction::executeSra(Hardware *harw)
 {
 	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
-		harw->setReg(rd_, harw->getReg(rs1_) >> rs2_);
+		harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));
 	else
-		harw->setReg(rd_, static_cast<RegValue>(static_cast<int32_t>(harw->getReg(rs1_)) >> rs2_));
+		harw->setReg(rd_, static_cast<RegValue>(static_cast<int32_t>(harw->getReg(rs1_)) >> harw->getReg(rs2_)));
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+void Instruction::executeSub(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs2_) - harw->getReg(rs1_));
+}
+
+void Instruction::executeXor(Hardware *harw)
+{
+	
+}
+void Instruction::executeOr (Hardware *harw)
+{
+
+}
+
+void Instruction::executeAnd(Hardware *harw)
+{
+
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 
 void Instruction::executor(Hardware *hardw) 
 {
