@@ -49,8 +49,10 @@ enum InsnClass : uint8_t //256 instruction are possible
 /* + */		kInsnSrli,
 /* + */		kInsnSrai,
 /* + */		kInsnJal,		/* 0b1101111 */
-/*   */		kInsnJalr,		/* 0b1100111 */
-			insnERROR
+/* + */		kInsnJalr,		/* 0b1100111 */
+/* + */		kInsnAuipc,		/* 0b0010111 */
+/* + */		kInsnLui,		/* 0b0110111*/
+			insnERROR,
 };
 
 
@@ -100,6 +102,9 @@ public:
 
 	const char* fromTypeToStr(InsnClass type);
 
+	void executeAuipc(Hardware *harw);
+	void executeLui(Hardware *harw);
+
 	void executeAdd(Hardware *harw); 	/* + */
 	void executeSub(Hardware *harw);	/* + */
 	void executeSll(Hardware *harw);	/* + */
@@ -129,13 +134,16 @@ public:
 
 
 	void executeAddi(Hardware *harw); 	/* + */
+	void executeXori(Hardware *harw);
+	void executeOri (Hardware *harw);
+	void executeAndi(Hardware *harw);
 	void executeSlli(Hardware *harw);	/* + */
 	void executeSrli(Hardware *harw);	/* + */
 	void executeSrai(Hardware *harw);	/* + */
 
 
-	void executeJal(Hardware *harw);
-	void executeJalr(Hardware *harw);
+	void executeJal(Hardware *harw);	/* + */
+	void executeJalr(Hardware *harw);	/* + */
 
 
 	void executor(Hardware* hardw);

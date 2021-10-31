@@ -8,16 +8,30 @@ const char* Instruction::fromTypeToStr(InsnClass type)
 
 Instruction::Instruction(EncodedInsn insn, RegValue pc)
 {
-	    // TODO: decode format before individual instructions
-	    // decoder is is the only place where raw constants are acceptable(!)
+	// TODO: decode format before individual instructions
+	// decoder is is the only place where raw constants are acceptable(!)
 
-		std::cout << "pc = " << pc << std::endl;
-		insnType_ = insnERROR;
-	    switch (insn & 0x7F) /* 1st seven bits*/
-		{
+	std::cout << "pc = " << pc << std::endl;
+	insnType_ = insnERROR;
+	switch (insn & 0x7F) /* 1st seven bits*/
+	{
 		case 0:
 		    break;
 		// R-format insns
+		case 0b0010111:
+		{
+		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
+			imm_ = getBits<31, 12>(insn) << 12;
+			insnType_ = kInsnAuipc;
+			break;
+		}
+		case 0b0110111:
+		{
+		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
+			imm_ = getBits<31, 12>(insn) << 12;
+			insnType_ = kInsnLui;
+			break;
+		}
 		case 0b0110011: /* DONE [only function realization needed] */
         {
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
@@ -252,8 +266,20 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			std::cout << "Undefinied opcode = " << opcode << std::endl;
 			P_BIT_NUM(opcode, 7);
 		}
-		}
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void Instruction::executeAuipc(Hardware *harw)
+{
+	harw->setReg(rd_, imm_);
+}
+
+void Instruction::executeLui(Hardware *harw)
+{
+	harw->setReg(rd_, imm_ + harw->pc());
+}
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -373,6 +399,21 @@ void Instruction::executeAddi(Hardware *harw)
 	harw->setReg(rd_, harw->getReg(rs1_) + imm_);	
 }
 
+void Instruction::executeXori(Hardware *harw)
+{
+	harw->setReg(rd_, imm_ ^ harw->getReg(rs1_));
+}
+
+void Instruction::executeOri (Hardware *harw)
+{
+	harw->setReg(rd_, imm_ | harw->getReg(rs1_));
+}
+
+void Instruction::executeAndi(Hardware *harw)
+{
+	harw->setReg(rd_, imm_ & harw->getReg(rs1_));
+}
+
 void Instruction::executeSlli(Hardware *harw)
 {
 	harw->setReg(rd_, harw->getReg(rs1_) << imm_);
@@ -429,6 +470,13 @@ void Instruction::executor(Hardware *hardw)
 	case insnERROR:
 		std::cout << "insnError" << std::endl;
 		assert(0);
+		break;
+/////////////////////////////////////////////
+	case kInsnAuipc:
+		executeAuipc(hardw);
+		break;
+	case kInsnLui:
+		executeLui(hardw);
 		break;
 /////////////////////////////////////////////
 	case kInsnAdd:
@@ -498,6 +546,9 @@ void Instruction::executor(Hardware *hardw)
 /////////////////////////////////////////////
 	case kInsnJal:
 		executeJal(hardw);
+		break;
+	case kInsnJalr:
+		executeJalr(hardw);
 		break;
 /////////////////////////////////////////////
 	default:
