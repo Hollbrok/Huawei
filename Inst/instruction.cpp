@@ -133,9 +133,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			imm_ = getBits<31, 20>(insn);
 			
 			auto funct3 = getBits<14, 12>(insn);
-			
-			//imm_ = imm_ + pc; //!!!!!!!!
-			
+						
 			if (funct3 == 0b000)
 			    insnType_ = kInsnLb;
 			else if (funct3 == 0b001)
@@ -175,8 +173,6 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			imm_ = getBits<11, 7>(insn) + getBits<31, 25>(insn) << 5;
 
 			auto funct3 = getBits<14, 12>(insn);
-
-			// imm_ + pc?
 
 			if (funct3 == 0b000)
 			    insnType_ = kInsnSb;
@@ -323,7 +319,52 @@ void Instruction::executeBne(Hardware *harw)
 }
 //////////////////////////////////////////////////////////////////////////
 
+#define BYTE 1
+#define HWORD 2
+#define WORD 4
 
+void Instruction::executeLb(Hardware *harw)
+{
+	RegValue readVal;
+	harw->read(harw->getReg(rs1_) + imm_, &readVal, BYTE);
+	harw->setReg(rd_, readVal);
+}
+
+void Instruction::executeLh(Hardware *harw)
+{
+	RegValue readVal;
+	harw->read(harw->getReg(rs1_) + imm_, &readVal, HWORD);
+	harw->setReg(rd_, readVal);
+}
+
+void Instruction::executeLw(Hardware *harw)
+{
+	RegValue readVal;
+	harw->read(harw->getReg(rs1_) + imm_, &readVal, WORD);
+	harw->setReg(rd_, readVal);
+}
+
+/* 			LOAD	section	/\		*/
+/* 	 		STORE	section \/		*/
+
+void Instruction::executeSb(Hardware *harw)
+{
+	harw->write(harw->getReg(rs2_) + imm_, harw->getReg(rs2_), BYTE);
+}
+
+void Instruction::executeSh(Hardware *harw)
+{
+	harw->write(harw->getReg(rs2_) + imm_, harw->getReg(rs2_), HWORD);
+}
+
+void Instruction::executeSw(Hardware *harw)
+{
+	harw->write(harw->getReg(rs2_) + imm_, harw->getReg(rs2_), WORD);
+}
+
+#undef BYTE
+#undef HWORD
+#undef WORD
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -417,6 +458,29 @@ void Instruction::executor(Hardware *hardw)
 /////////////////////////////////////////////
 	case kInsnBeq:
 		executeBeq(hardw);
+		break;
+	case kInsnBne:
+		executeBne(hardw);
+		break;
+/////////////////////////////////////////////
+	case kInsnLb:
+		executeLb(hardw);
+		break;
+	case kInsnLh:
+		executeLh(hardw);
+		break;
+	case kInsnLw:
+		executeLw(hardw);
+		break;
+/////////////////////////////////////////////
+	case kInsnSb:
+		executeSb(hardw);
+		break;
+	case kInsnSh:
+		executeSh(hardw);
+		break;
+	case kInsnSw:
+		executeSw(hardw);
 		break;
 /////////////////////////////////////////////
 	case kInsnAddi:

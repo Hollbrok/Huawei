@@ -29,16 +29,16 @@ enum InsnClass : uint8_t //256 instruction are possible
 /*   */		kInsnBge,
 /*   */		kInsnBltu,
 /*   */		kInsnBgeu,
-/*   */		kInsnLb,		/* 0b0000011 */
-/*   */		kInsnLh,
-/*   */		kInsnLw,
+/* + */		kInsnLb,		/* 0b0000011 */
+/* + */		kInsnLh,
+/* + */		kInsnLw,
 /*   */		kInsnLbu,
 /*   */		kInsnLhu,
 /*   */		kInsnEcall,		/* 0b1110011 */
 /*   */		kInsnEbreak,
-/*   */		kInsnSb,		/* 0b0100011 */
-/*   */		kInsnSh,
-/*   */		kInsnSw,
+/* + */		kInsnSb,		/* 0b0100011 */
+/* + */		kInsnSh,
+/* + */		kInsnSw,
 /* + */		kInsnAddi,		/* 0b0010011 */
 /*   */		kInsnSlti,
 /*   */		kInsnSltiu,
@@ -109,15 +109,30 @@ public:
 	void executeOr (Hardware *harw);	/* + */
 	void executeAnd(Hardware *harw);	/* + */
 
+
+
 	void executeBeq(Hardware *harw); 	/* + */
 	void executeBne(Hardware *harw); 	/* + */
 
+
+
+	void executeLb(Hardware *harw);		/* + */
+	void executeLh(Hardware *harw);		/* + */
+	void executeLw(Hardware *harw);		/* + */
+
+
+
+
+	void executeSb(Hardware *harw);		/* + */
+	void executeSh(Hardware *harw);		/* + */
+	void executeSw(Hardware *harw);		/* + */
 
 
 	void executeAddi(Hardware *harw); 	/* + */
 	void executeSlli(Hardware *harw);	/* + */
 	void executeSrli(Hardware *harw);	/* + */
 	void executeSrai(Hardware *harw);	/* + */
+
 
 	void executeJal(Hardware *harw);
 	void executeJalr(Hardware *harw);
