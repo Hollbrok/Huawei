@@ -33,10 +33,13 @@ int main(int argc, char *argv[])
     EncodedInsn begInsn = 0b00000000100101000000010001100011;
     EncodedInsn add1    = 0b00000000000100001000000010110011;
     EncodedInsn add2    = 0b00000000000100010000000110110011;
+    EncodedInsn srl     = 0b00000000000100011101000110110011;
+    EncodedInsn sll     = 0b00000000000100011001000110110011;
 
     physMem.write(0, begInsn);
     physMem.write(4, add1);
     physMem.write(8, add2);
+    physMem.write(12, sll);
 
     RegValue retval;
 
@@ -46,7 +49,7 @@ int main(int argc, char *argv[])
     Hardware hardWare{&physMem};
     hardWare.setReg(kX1, 2);
     hardWare.setReg(kX2, 5);
-    hardWare.setReg(kX8, 12);
+    hardWare.setReg(kX8, 11);
     hardWare.setReg(kX9, 11);
 
 

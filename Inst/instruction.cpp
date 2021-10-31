@@ -274,41 +274,96 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		}
 	}
 
-void Instruction::executeAdd(Hardware* harw)
+void Instruction::executeAdd(Hardware *harw)
 {		
 	harw->setReg(rd_, harw->getReg(rs1_) + harw->getReg(rs2_));
 }
 
-void Instruction::executeBeq(Hardware* harw)
+void Instruction::executeBeq(Hardware *harw)
 {
 	if (harw->getReg(rs1_) == harw->getReg(rs2_))
 	    harw->branch(imm_); 
 }
 
-void Instruction::executeAddi(Hardware* harw)
+void Instruction::executeAddi(Hardware *harw)
 {	
 	harw->setReg(rd_, harw->getReg(rs1_) + imm_);	
 }
 
-void Instruction::executor(Hardware* hardw) 
+void Instruction::executeSlli(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs1_) << imm_);
+}
+
+void Instruction::executeSrli(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs1_) >> imm_);
+}
+
+void Instruction::executeSrai(Hardware *harw)
+{
+	auto shift = getBits<4, 0> (imm_);
+	
+	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
+		harw->setReg(rd_, harw->getReg(rs1_) >> imm_);
+	else
+		harw->setReg(rd_, static_cast<RegValue>( static_cast<int32_t>(harw->getReg(rs1_)) >> imm_ ));
+}
+
+void Instruction::executeSll(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs1_) << rs2_);
+}	
+void Instruction::executeSrl(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs1_) >> rs2_);	
+}
+
+void Instruction::executeSra(Hardware *harw)
+{
+	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
+		harw->setReg(rd_, harw->getReg(rs1_) >> rs2_);
+	else
+		harw->setReg(rd_, static_cast<RegValue>(static_cast<int32_t>(harw->getReg(rs1_)) >> rs2_));
+}
+
+void Instruction::executor(Hardware *hardw) 
+{
+	if (DEBUG_REGIME)
+		std::cout << "type of insn = " << fromTypeToStr(insnType_) << std::endl;
+
+	switch (insnType_)
 	{
-		switch (insnType_)
-		{
-		case kInsnAdd:
-			std::cout << "type of insn = ADD\n";
-			executeAdd(hardw);
-			break;
-		case kInsnBeq:
-			std::cout << "type of insn = BEQ\n";
-			executeBeq(hardw);
-			break;
-		case kInsnAddi:
-			std::cout << "type of insn = ADDI\n";
-			executeAddi(hardw);
-			break;
-		default:
-			std::cout << "undefinied [instruction type = " << fromTypeToStr(insnType_) << "] LINE :" << __LINE__ << std::endl;
-			assert(0);
-			break;
-		}
-	} 
+	case kInsnAdd:
+		executeAdd(hardw);
+		break;
+	case kInsnBeq:
+		executeBeq(hardw);
+		break;
+	case kInsnAddi:
+		executeAddi(hardw);
+		break;
+	case kInsnSlli:
+		executeSlli(hardw);
+		break;
+	case kInsnSrli:
+		executeSrli(hardw);
+		break;
+	case kInsnSrai:
+		executeSrai(hardw);
+		break;
+	case kInsnSll:
+		executeSll(hardw);
+		break;
+	case kInsnSrl:
+		executeSrl(hardw);
+		break;
+	case kInsnSra:
+		executeSra(hardw);
+		break;
+	default:
+		std::cout << "undefinied [instruction type = " << fromTypeToStr(insnType_) << "] LINE :" << __LINE__ << std::endl;
+		assert(0);
+		break;
+	}
+} 
