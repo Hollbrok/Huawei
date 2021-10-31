@@ -120,6 +120,7 @@ public:
 	void executeSrai(Hardware *harw);	/* + */
 
 	void executeJal(Hardware *harw);
+	void executeJalr(Hardware *harw);
 
 
 	void executor(Hardware* hardw);

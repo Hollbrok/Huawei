@@ -48,15 +48,15 @@
     }
 
 #define ERR_HANDLER(msg)    \
-    do { perror(msg); exit(EXIT_FAILURE); } while(0);
+    do { perror(msg); exit(EXIT_FAILURE); } while(0)
 
 #define P_NUM(num)          \
     std::cout << #num << " = " << num << std::endl;
 
 
-#define P_BIT_NUM(num, bits)                  \
-    {std::bitset<bits> num_b(num);           \
-    std::cout << #num << "_b = " << num_b << std::endl;}
+#define P_BIT_NUM(num, bits)                        \
+    do{std::bitset<bits> num_b(num);                \
+    std::cout << #num << "_b = " << num_b << std::endl;}while(0)
 
 
 #endif

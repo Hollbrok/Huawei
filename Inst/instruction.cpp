@@ -100,7 +100,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			auto testval2 = getBits<7, 7>(insn) << 11;
 
 			P_BIT_NUM(testval2, 1);
-			
+
 			auto testval3 = getBits<30, 25>(insn) << 5;
 			auto testval4 = getBits<31, 31>(insn) << 12;
 			
@@ -223,38 +223,38 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 					assert (0 && "Undefinied type");
 			}
 		}
-		case 0b1101111:
+		case 0b1100111:
 		{
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 
-			uint32_t retImm = getBits<31, 20>(insn);
+			imm_ = getBits<31, 20>(insn);
 
-			imm_ = getBits<20, 20>(retImm) << 20 + getBits<19, 9>(retImm) << 1 
-				 + getBits<8 ,  8>(retImm) << 11 + getBits<0 , 7>(retImm) << 12;
-			
-			auto funct3 = getBits<14, 12>(insn) + pc;
+			auto funct3 = getBits<14, 12>(insn);
 			
 			if (funct3 == 0b000)
-			    insnType_ = kInsnJal;
+			    insnType_ = kInsnJalr;
 			else 
 				assert (0 && "Undefinied funct3 for instruction");
 		    break;
 		}
-		case 0b1100111:
+		case 0b1101111:
 		{
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
-			rs1_ = static_cast<RegId> (getBits<15, 19>(insn));
-			imm_ = getBits<31, 20>(insn);
 			
-			insnType_ = kInsnJalr;
+			uint32_t retImm = getBits<31, 12>(insn);
+
+			imm_ = (getBits<20, 20>(retImm) << 20) + (getBits<19, 9>(retImm) << 1) 
+				 + (getBits<8 ,  8>(retImm) << 11) + (getBits<0 , 7>(retImm) << 12) + pc;
+
+			insnType_ = kInsnJal;
 		    break;
 		}
 		default:
 		{
 			auto opcode = (insn & 0x7F);
 			std::cout << "Undefinied opcode = " << opcode << std::endl;
-			P_BIT_NUM(opcode, 7)
+			P_BIT_NUM(opcode, 7);
 		}
 		}
 	}
@@ -317,6 +317,7 @@ void Instruction::executeBeq(Hardware *harw)
 
 void Instruction::executeBne(Hardware *harw)
 {
+	std::cout << "rs_1, rs_2, imm_ " << harw->getReg(rs1_) << " " << harw->getReg(rs2_) << " " << imm_ << std::endl;
 	if (harw->getReg(rs1_) != harw->getReg(rs2_))
 	    harw->branch(imm_); 
 }
@@ -356,8 +357,22 @@ void Instruction::executeSrai(Hardware *harw)
 
 void Instruction::executeJal(Hardware *harw)
 {
+	std::cout << "saved pc = " << harw->pc() + 4 << ";in rd_ = " << rd_ << std::endl;
+	std::cout << "imm_ = " << imm_ << std::endl;
+
 	harw->setReg(rd_, harw->pc() + 4);
-	harw->pc() = imm_; 
+	
+	//harw->pc() = imm_; 
+	harw->branch(imm_);
+}
+
+void Instruction::executeJalr(Hardware *harw)
+{
+	std::cout << "saved pc = " << harw->pc() + 4 << ";in rd_ = " << rd_ << std::endl;
+	std::cout << "imm_ = " << imm_ << std::endl;
+
+	harw->setReg(rd_, harw->pc() + 4);
+	harw->branch(imm_ + harw->getReg(rd_));
 }
 
 
@@ -415,6 +430,10 @@ void Instruction::executor(Hardware *hardw)
 		break;
 	case kInsnSrai:
 		executeSrai(hardw);
+		break;
+/////////////////////////////////////////////
+	case kInsnJal:
+		executeJal(hardw);
 		break;
 /////////////////////////////////////////////
 	default:
