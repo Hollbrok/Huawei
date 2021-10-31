@@ -1,6 +1,11 @@
 #include "instruction.h"
 #include "../Hardware/hardware.h"
 
+const char* Instruction::fromTypeToStr(InsnClass type)
+{
+	return kInsnTypeNames[type];
+}
+
 Instruction::Instruction(EncodedInsn insn, RegValue pc)
 {
 	    // TODO: decode format before individual instructions
@@ -12,7 +17,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		case 0:
 		    break;
 		// R-format insns
-		case 0b0110011: /* DONE [only function realization needed]*/
+		case 0b0110011: /* DONE [only function realization needed] */
         {
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
@@ -76,7 +81,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 				assert (0);
 		    break;
         }
-        case 0b1100011: /* PC (Branch)*/
+        case 0b1100011: /* PC (Branch) */
 		{
 
 			/*std::bitset<32> insn_b(insn);
@@ -138,7 +143,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 				assert (0 && "Undefinied funct3 for PC-instruction");
 		    break;
         }
-		case 0b0000011:
+		case 0b0000011: /* LB lH LW LBU LHU */ 
 		{
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
@@ -163,7 +168,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 				assert (0 && "Undefinied funct3 for instruction");
 		    break;
 		}
-		case 0b1110011: /* ECALL - EBREAK*/
+		case 0b1110011: /* ECALL - EBREAK */
 		{
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
@@ -180,7 +185,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 				assert (0 && "Undefinied instruction");
 		    break;
 		}
-		case 0b0100011:
+		case 0b0100011: /* SB SH SW */ 
 		{
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
@@ -201,7 +206,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 				assert (0 && "Undefinied type");
 		    break;
         }
-		case 0b0010011:
+		case 0b0010011: /* ADDI SLTI SLTIU XORI ORI ANDI SLLI SRLI SRAI */
 		{
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
@@ -209,8 +214,6 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			imm_ = 	static_cast<RegId> (getBits<31, 20>(insn));
 
 			auto funct3 = getBits<14, 12>(insn);
-
-			// imm_ + pc?
 
 			if (funct3 == 0b000)
 			    insnType_ = kInsnAddi;
@@ -224,8 +227,19 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 				insnType_ = kInsnOri;
 			else if (funct3 == 0b111)
 				insnType_ = kInsnAndi;
-			else
-				assert (0 && "Undefinied type");
+			else /* logical/arithmetic shifts */
+			{
+				auto funct7 = getBits<5, 11>(imm_);
+
+				if (funct7 == 0 && funct3 == 0b001)
+					insnType_ = kInsnSlli;
+				else if (funct7 == 0 && funct3 == 0b101)
+					insnType_ = kInsnSrli;
+				else if (funct7 == 0b100000 && funct3 == 0b101)
+					insnType_ = kInsnSrai;
+				else
+					assert (0 && "Undefinied type");
+			}
 		}
 		case 0b1101111:
 		{
@@ -261,27 +275,40 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 	}
 
 void Instruction::executeAdd(Hardware* harw)
-{
-    auto rs1value = harw->getReg(rs1_);
-	auto rs2value = harw->getReg(rs2_);
-	
-	auto result = rs1value + rs2value;
-	
-	std::cout << "result in ADD = " << result << std::endl;
-
-	harw->setReg(rd_, result);
+{		
+	harw->setReg(rd_, harw->getReg(rs1_) + harw->getReg(rs2_));
 }
 
 void Instruction::executeBeq(Hardware* harw)
 {
-	std::cout << "rs1, rs2 = " << rs1_ << " " << rs2_ << std::endl;
-    auto rs1value = harw->getReg(rs1_);
-	auto rs2value = harw->getReg(rs2_);
-	
-	std::cout << "imm = " << imm_ << std::endl;
-
-	if (rs1value == rs2value)
-	    harw->branch(imm_); // + pc_
-	
-	//harw->setReg(insn.rd(), result);
+	if (harw->getReg(rs1_) == harw->getReg(rs2_))
+	    harw->branch(imm_); 
 }
+
+void Instruction::executeAddi(Hardware* harw)
+{	
+	harw->setReg(rd_, harw->getReg(rs1_) + imm_);	
+}
+
+void Instruction::executor(Hardware* hardw) 
+	{
+		switch (insnType_)
+		{
+		case kInsnAdd:
+			std::cout << "type of insn = ADD\n";
+			executeAdd(hardw);
+			break;
+		case kInsnBeq:
+			std::cout << "type of insn = BEQ\n";
+			executeBeq(hardw);
+			break;
+		case kInsnAddi:
+			std::cout << "type of insn = ADDI\n";
+			executeAddi(hardw);
+			break;
+		default:
+			std::cout << "undefinied [instruction type = " << fromTypeToStr(insnType_) << "] LINE :" << __LINE__ << std::endl;
+			assert(0);
+			break;
+		}
+	} 

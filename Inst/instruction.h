@@ -13,61 +13,63 @@ typedef void (*Executor)(Hardware* hart, const Instruction& insn);
 
 enum InsnClass : uint8_t //256 instruction are possible
 {
-    kInsnAdd,		//
-	kInsnSub,
-	kInsnSll,
-	kInsnSlt,
-	kInsnSltu,
-	kInsnXor,
-	kInsnSrl,
-	kInsnSra,
-	kInsnOr,
-	kInsnAnd,
-    kInsnBeq, 		//
-	kInsnBne,
-	kInsnBlt,
-	kInsnBge,
-	kInsnBltu,
-	kInsnBgeu,
-	kInsnLb,		//
-	kInsnLh,
-	kInsnLw,
-	kInsnLbu,
-	kInsnLhu,
-	kInsnEcall,		//
-	kInsnEbreak,
-	kInsnSb,		//
-	kInsnSh,
-	kInsnSw,
-	kInsnAddi,		//
-	kInsnSlti,
-	kInsnSltiu,
-	kInsnXori,
-	kInsnOri,
-	kInsnAndi,
-	kInsnJal,		//
-	kInsnJalr		//
+/* + */ 	kInsnAdd,		/* 0b0110011 */
+/*   */		kInsnSub,
+/*   */		kInsnSll,
+/*   */		kInsnSlt,
+/*   */		kInsnSltu,
+/*   */		kInsnXor,
+/*   */		kInsnSrl,
+/*   */		kInsnSra,
+/*   */		kInsnOr,
+/*   */		kInsnAnd,
+/* + */		kInsnBeq, 		/*/ 0b1100011 */
+/*   */		kInsnBne,
+/*   */		kInsnBlt,
+/*   */		kInsnBge,
+/*   */		kInsnBltu,
+/*   */		kInsnBgeu,
+/*   */		kInsnLb,		/* 0b0000011 */
+/*   */		kInsnLh,
+/*   */		kInsnLw,
+/*   */		kInsnLbu,
+/*   */		kInsnLhu,
+/*   */		kInsnEcall,		/* 0b1110011 */
+/*   */		kInsnEbreak,
+/*   */		kInsnSb,		/* 0b0100011 */
+/*   */		kInsnSh,
+/*   */		kInsnSw,
+/* + */		kInsnAddi,		/* 0b0010011 */
+/*   */		kInsnSlti,
+/*   */		kInsnSltiu,
+/*   */		kInsnXori,
+/*   */		kInsnOri,
+/*   */		kInsnAndi,
+/*   */		kInsnSlli,
+/*   */		kInsnSrli,
+/*   */		kInsnSrai,
+/*   */		kInsnJal,		/* 0b1101111 */
+/*   */		kInsnJalr		/* 0b1100111 */
 };
+
+const char kInsnTypeNames[][20] =
+{
+	"ADD", "SUB", "SLL", "SLT", "SLTU", "XOR", "SRL", "SRA", "OR", "AND", 
+	"BEQ", "BNE", "BLT", "BGE", "BLTU", "BGEU",
+	"LB", "LH", "LW", "LBU", "LHU",
+	"ECALL", "EBREAK",
+	"SB", "SH", "SW",
+	"ADDI", "SLTI", "SLTIU", "XORI", "ORI", "ANDI", "SLLI", "SRLI", "SRAI",
+	"JAL",
+	"JALR"
+};
+
+
 
 template<int hi,int lo, class T = RegValue>
 T getBits(T value)
 {
-	auto x1 = value << (sizeof(T) * 8 - hi - 1);
-	auto x2 = x1 >> (sizeof(T) * 8 - hi - 1);
-	auto x3 = x2 >> lo;
-	/*auto x1 = ((value >> lo) << lo);
-	auto x2 = (x1 << (sizeof(T) * 8 - hi - 1));
-	auto x3 = x2 >> (sizeof(T) * 8 - hi - 1);
-	
-	std::bitset<32> x1_b(x1);
-	std::bitset<32> x2_b(x2);
-	std::bitset<32> x3_b(x3);
-	std::cout << "x1_b =   " << x1_b;
-	std::cout << "\nx2_b =   " << x2_b;
-	std::cout << "\nx3_b =   " << x3_b << std::endl;
-*/
-
-    return x3; 
+    return ( ( value << (sizeof(T) * 8 - hi - 1) ) >> (sizeof(T) * 8 - hi - 1) ) >> lo ; 
 }
 
 class Instruction
@@ -94,25 +96,15 @@ public:
 
 // OTHER
 
+	const char* fromTypeToStr(InsnClass type);
+
 	void executeAdd(Hardware* harw);
 	void executeBeq(Hardware* harw);
 
-	void executor(Hardware* hardw) 
-	{
-		switch (insnType_)
-		{
-		case kInsnAdd:
-			executeAdd(hardw);
-			break;
-		case kInsnBeq:
-			std::cout << "type of insn = BEQ\n";
-			executeBeq(hardw);
-			break;
-		default:
-			std::cout << "default insn Type\n";
-			break;
-		}
-	} 
+	void executeAddi(Hardware* harw);
+
+
+	void executor(Hardware* hardw);
 
 };
 

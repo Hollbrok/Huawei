@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     Hardware hardWare{&physMem};
     hardWare.setReg(kX1, 2);
     hardWare.setReg(kX2, 5);
-    hardWare.setReg(kX8, 11);
+    hardWare.setReg(kX8, 12);
     hardWare.setReg(kX9, 11);
 
 
