@@ -49,7 +49,8 @@ enum InsnClass : uint8_t //256 instruction are possible
 /* + */		kInsnSrli,
 /* + */		kInsnSrai,
 /*   */		kInsnJal,		/* 0b1101111 */
-/*   */		kInsnJalr		/* 0b1100111 */
+/*   */		kInsnJalr,		/* 0b1100111 */
+			insnERROR
 };
 
 const char kInsnTypeNames[][20] =

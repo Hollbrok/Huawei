@@ -41,6 +41,10 @@ int main(int argc, char *argv[])
     physMem.write(8, add2);
     physMem.write(12, sll);
 
+    P_BIT_NUM(8599, 32);
+
+    //physMem.write(16, 8599);
+
     RegValue retval;
 
     //std::cout << "T write:" << addInsn;

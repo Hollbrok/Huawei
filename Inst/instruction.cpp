@@ -12,6 +12,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 	    // decoder is is the only place where raw constants are acceptable(!)
 
 		std::cout << "pc = " << pc << std::endl;
+		insnType_ = insnERROR;
 	    switch (insn & 0x7F) /* 1st seven bits*/
 		{
 		case 0:
@@ -271,6 +272,12 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			insnType_ = kInsnJalr;
 		    break;
 		}
+		default:
+		{
+			auto opcode = (insn & 0x7F);
+			std::cout << "Undefinied opcode = " << opcode << std::endl;
+			P_BIT_NUM(opcode, 7)
+		}
 		}
 	}
 
@@ -366,6 +373,11 @@ void Instruction::executor(Hardware *hardw)
 
 	switch (insnType_)
 	{
+	case insnERROR:
+		std::cout << "insnError" << std::endl;
+		assert(0);
+		break;
+/////////////////////////////////////////////
 	case kInsnAdd:
 		executeAdd(hardw);
 		break;
@@ -394,7 +406,7 @@ void Instruction::executor(Hardware *hardw)
 	case kInsnBeq:
 		executeBeq(hardw);
 		break;
-/////////////////////////////////
+/////////////////////////////////////////////
 	case kInsnAddi:
 		executeAddi(hardw);
 		break;
@@ -407,6 +419,7 @@ void Instruction::executor(Hardware *hardw)
 	case kInsnSrai:
 		executeSrai(hardw);
 		break;
+/////////////////////////////////////////////
 	default:
 		std::cout << "undefinied [instruction type = " << fromTypeToStr(insnType_) << "] LINE :" << __LINE__ << std::endl;
 		assert(0);
