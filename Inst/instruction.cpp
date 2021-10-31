@@ -343,16 +343,17 @@ void Instruction::executeSub(Hardware *harw)
 
 void Instruction::executeXor(Hardware *harw)
 {
-	
+	harw->setReg(rd_, harw->getReg(rs2_) ^ harw->getReg(rs1_));
 }
+
 void Instruction::executeOr (Hardware *harw)
 {
-
+	harw->setReg(rd_, harw->getReg(rs2_) | harw->getReg(rs1_));
 }
 
 void Instruction::executeAnd(Hardware *harw)
 {
-
+	harw->setReg(rd_, harw->getReg(rs2_) & harw->getReg(rs1_));
 }
 
 
@@ -368,9 +369,32 @@ void Instruction::executor(Hardware *hardw)
 	case kInsnAdd:
 		executeAdd(hardw);
 		break;
+	case kInsnSub:
+		executeSub(hardw);
+		break;
+	case kInsnSll:
+		executeSll(hardw);
+		break;
+	case kInsnXor:
+		executeXor(hardw);
+		break;
+	case kInsnSrl:
+		executeSrl(hardw);
+		break;
+	case kInsnSra:
+		executeSra(hardw);
+		break;
+	case kInsnOr:
+		executeOr(hardw);
+		break;
+	case kInsnAnd:
+		executeAnd(hardw);
+		break;
+/////////////////////////////////////////////
 	case kInsnBeq:
 		executeBeq(hardw);
 		break;
+/////////////////////////////////
 	case kInsnAddi:
 		executeAddi(hardw);
 		break;
@@ -382,15 +406,6 @@ void Instruction::executor(Hardware *hardw)
 		break;
 	case kInsnSrai:
 		executeSrai(hardw);
-		break;
-	case kInsnSll:
-		executeSll(hardw);
-		break;
-	case kInsnSrl:
-		executeSrl(hardw);
-		break;
-	case kInsnSra:
-		executeSra(hardw);
 		break;
 	default:
 		std::cout << "undefinied [instruction type = " << fromTypeToStr(insnType_) << "] LINE :" << __LINE__ << std::endl;
