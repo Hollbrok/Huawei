@@ -93,43 +93,24 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
 
-			/*std::bitset<5> rd_b(insn);
-			std::cout << "rd_b = " << rd_b << std::endl;
-
-			std::cout << "rs1, rs2, rd= " << rs1_ << " " << rs2_ << " " << rd_ << std::endl;
-			*/
-
 			auto testval1 = getBits<11, 8>(insn) << 1;
-			//std::bitset<5> testval1_b(testval1);
-			//std::cout << "testval1_b = " << testval1_b << std::endl;
+
+			P_BIT_NUM(testval1, 4);
 
 			auto testval2 = getBits<7, 7>(insn) << 11;
-			//std::bitset<5> testval2_b(testval2);
-			//std::cout << "testval2_b = " << testval2_b << std::endl;
 
+			P_BIT_NUM(testval2, 1);
+			
 			auto testval3 = getBits<30, 25>(insn) << 5;
-			//std::bitset<5> testval3_b(testval3);
-			//std::cout << "testval3_b = " << testval3_b << std::endl;
-
-
 			auto testval4 = getBits<31, 31>(insn) << 12;
-			//std::bitset<5> testval4_b(testval4);
-			//std::cout << "testval4_b = " << testval4_b << std::endl;
 			
-
-			imm_ = testval1 + testval2 + testval3 + testval4;
-			
-			std::bitset<13> imm_b(imm_);
-			//std::cout << "imm_b = " << imm_b << std::endl; 
+			std::cout << "pc = " << pc << std::endl;
+			imm_ = testval1 + testval2 + testval3 + testval4 + pc;
 
 			auto funct3 = getBits<14, 12>(insn);
 			
 			if (funct3 == 0b000)
-			{
-				//std::cout<< "Beq finded\n";
-
 			    insnType_ = kInsnBeq;
-			}
 			else if (funct3 == 0b001)
 				insnType_ = kInsnBne;
 			else if (funct3 == 0b100)
@@ -252,9 +233,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			imm_ = getBits<20, 20>(retImm) << 20 + getBits<19, 9>(retImm) << 1 
 				 + getBits<8 ,  8>(retImm) << 11 + getBits<0 , 7>(retImm) << 12;
 			
-			auto funct3 = getBits<14, 12>(insn);
-			
-			//imm_ = imm_ + pc; //!!!!!!!!
+			auto funct3 = getBits<14, 12>(insn) + pc;
 			
 			if (funct3 == 0b000)
 			    insnType_ = kInsnJal;
@@ -266,8 +245,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		{
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<15, 19>(insn));
-			imm_ = getBits<31, 20>(insn) ;
-			// +pc
+			imm_ = getBits<31, 20>(insn);
 			
 			insnType_ = kInsnJalr;
 		    break;
@@ -288,18 +266,70 @@ void Instruction::executeAdd(Hardware *harw)
 	harw->setReg(rd_, harw->getReg(rs1_) + harw->getReg(rs2_));
 }
 
+void Instruction::executeSub(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs2_) - harw->getReg(rs1_));
+}
+
+void Instruction::executeXor(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs2_) ^ harw->getReg(rs1_));
+}
+
+void Instruction::executeOr (Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs2_) | harw->getReg(rs1_));
+}
+
+void Instruction::executeAnd(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs2_) & harw->getReg(rs1_));
+}
+
+
+void Instruction::executeSll(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs1_) << harw->getReg(rs2_));
+}	
+
+void Instruction::executeSrl(Hardware *harw)
+{
+	harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));	
+}
+
+void Instruction::executeSra(Hardware *harw)
+{
+	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
+		harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));
+	else
+		harw->setReg(rd_, static_cast<RegValue>(static_cast<int32_t>(harw->getReg(rs1_)) >> harw->getReg(rs2_)));
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+
 void Instruction::executeBeq(Hardware *harw)
 {
+	std::cout << "rs_1, rs_2, imm_ " << harw->getReg(rs1_) << " " << harw->getReg(rs2_) << " " << imm_ << std::endl;
 	if (harw->getReg(rs1_) == harw->getReg(rs2_))
 	    harw->branch(imm_); 
 }
+
+void Instruction::executeBne(Hardware *harw)
+{
+	if (harw->getReg(rs1_) != harw->getReg(rs2_))
+	    harw->branch(imm_); 
+}
+//////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////
 
 void Instruction::executeAddi(Hardware *harw)
 {	
 	harw->setReg(rd_, harw->getReg(rs1_) + imm_);	
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 void Instruction::executeSlli(Hardware *harw)
 {
@@ -323,44 +353,11 @@ void Instruction::executeSrai(Hardware *harw)
 
 //////////////////////////////////////////////////////////////////////////
 
-void Instruction::executeSll(Hardware *harw)
-{
-	harw->setReg(rd_, harw->getReg(rs1_) << harw->getReg(rs2_));
-}	
 
-void Instruction::executeSrl(Hardware *harw)
+void Instruction::executeJal(Hardware *harw)
 {
-	harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));	
-}
-
-void Instruction::executeSra(Hardware *harw)
-{
-	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
-		harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));
-	else
-		harw->setReg(rd_, static_cast<RegValue>(static_cast<int32_t>(harw->getReg(rs1_)) >> harw->getReg(rs2_)));
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-void Instruction::executeSub(Hardware *harw)
-{
-	harw->setReg(rd_, harw->getReg(rs2_) - harw->getReg(rs1_));
-}
-
-void Instruction::executeXor(Hardware *harw)
-{
-	harw->setReg(rd_, harw->getReg(rs2_) ^ harw->getReg(rs1_));
-}
-
-void Instruction::executeOr (Hardware *harw)
-{
-	harw->setReg(rd_, harw->getReg(rs2_) | harw->getReg(rs1_));
-}
-
-void Instruction::executeAnd(Hardware *harw)
-{
-	harw->setReg(rd_, harw->getReg(rs2_) & harw->getReg(rs1_));
+	harw->setReg(rd_, harw->pc() + 4);
+	harw->pc() = imm_; 
 }
 
 

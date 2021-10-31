@@ -24,7 +24,7 @@ enum InsnClass : uint8_t //256 instruction are possible
 /* + */		kInsnOr,
 /* + */		kInsnAnd,
 /* + */		kInsnBeq, 		/*/ 0b1100011 */
-/*   */		kInsnBne,
+/* + */		kInsnBne,
 /*   */		kInsnBlt,
 /*   */		kInsnBge,
 /*   */		kInsnBltu,
@@ -48,10 +48,11 @@ enum InsnClass : uint8_t //256 instruction are possible
 /* + */		kInsnSlli,
 /* + */		kInsnSrli,
 /* + */		kInsnSrai,
-/*   */		kInsnJal,		/* 0b1101111 */
+/* + */		kInsnJal,		/* 0b1101111 */
 /*   */		kInsnJalr,		/* 0b1100111 */
 			insnERROR
 };
+
 
 const char kInsnTypeNames[][20] =
 {
@@ -109,6 +110,7 @@ public:
 	void executeAnd(Hardware *harw);	/* + */
 
 	void executeBeq(Hardware *harw); 	/* + */
+	void executeBne(Hardware *harw); 	/* + */
 
 
 
@@ -116,6 +118,8 @@ public:
 	void executeSlli(Hardware *harw);	/* + */
 	void executeSrli(Hardware *harw);	/* + */
 	void executeSrai(Hardware *harw);	/* + */
+
+	void executeJal(Hardware *harw);
 
 
 	void executor(Hardware* hardw);

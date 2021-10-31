@@ -55,8 +55,8 @@
 
 
 #define P_BIT_NUM(num, bits)                  \
-    std::bitset<bits> num_b(num);           \
-    std::cout << #num << "_b = " << num_b << std::endl;
+    {std::bitset<bits> num_b(num);           \
+    std::cout << #num << "_b = " << num_b << std::endl;}
 
 
 #endif

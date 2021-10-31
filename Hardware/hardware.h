@@ -24,8 +24,8 @@ public:
 
     RegValue getReg(RegId id) const {return regs_[id];}
 	
-	RegValue pc() const {return pc_;}
-	
+	const RegValue& pc() const {return pc_;}
+	RegValue& pc() {return pc_;}
 // SETTERS
     
 	void setReg(RegId id, RegValue value) {regs_[id] = value;}
