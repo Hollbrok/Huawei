@@ -1,9 +1,9 @@
 #ifndef HARDWARE_H
 #define HARDWARE_H
 
-#include "../libs.h"
-#include "../debug.h"
-#include "../common.h"
+#include "../includes/libs.h"
+#include "../includes/debug.h"
+#include "../includes/common.h"
 
 #include "../Inst/instruction.h"
 #include "../PhysMem/physMem.h"

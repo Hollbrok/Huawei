@@ -1,20 +1,25 @@
+# Сборка
+    [ ] git clone https://github.com/Hollbrok/Huawei
+    [ ] cd ./Huawei
+    [ ] make
+    [ ] ./out [ELF_FILE]
+
+At this moment there is no parsing of __elf-file__ and the executed instructions are written to memory manually.
+
+## realized opportunities
+
+- [X] Debug regime: printing executable instructions with the values of registers used / modified by current instruction.
+
+- [X] Almost all __RV32I Base Instruction Set__ are supported:
+
+__ Add, Sub, Sll, Slt, Sltu, Xor, Srl, Sra, Or, And, Beq, Bne, Blt, Bge, Bltu, Bgeu, Lb, Lh, Lw, Lbu, Lhu, Ecall, Ebreak, Sb, Sh, Sw, Addi, Slti, Sltiu, Xori, Ori, Andi, Slli, Srli, Srai, Jal, Jalr, Auipc, Lui__.
+
 # TODO
 
-- [ ] Добавить функцию для удобного вывода числа в bitset (с нумерацией битов выше) + учтение режима дебага
-- [ ] Тест прогу вынеси в отдельный файл (c beq + add)
+- [ ] Parsing of __elf-file__.
 
-- [ ] Обрабатывающую функцию устанавливать в том же месте, где и тип, чтобы лишний раз не искать нужную, ведь на месте, где определили тип уже все известно.
+- [ ] Correct support of processing the __x0__ register.
 
-- [ ] Добавить несколько уровней DEBUG_REGIME по приоритету
-
+- [ ] Опция симулятора для печати исполняемых инструкций со значениями регистров используемых/модифицируемых инструкцией. Поощряются обобщённые решения (сложный вариант).
 
 
-
-## IMPORTANT
-
-- [ ]  Опция симулятора для печати исполняемых инструкций со значениями регистров используемых/модифицируемых инструкцией. Поощряются обобщённые решения (сложный вариант).
-
-(Можно сделать executor не просто указателем на функцию, а функтором, в качестве аргументо конструктора будет принимать нужные параметра, тем самым сократить кол-во кода и копи-пасты)
-(определять нужные параметры можно по типу инструкции I,R,...)
-
-- [ ] Корректная поддержка обработки регистра x0 (на лекции не рассматривалось). Оригинальные решения поощряются (сложный вариант).

@@ -16,15 +16,13 @@ all: MAIN CLEAN
 
 main.o:	main.cpp
 			g++ -c -o main.o main.cpp
+
 MAIN: ./PhysMem/physMem.o ./Hardware/hardware.o ./Inst/instruction.o main.o 
 			g++ $(flags) -o out main.o physMem.o hardware.o instruction.o $(def)
-
-#WRITER: sem_cntl.o get_stuff.o writer.o
-#			gcc -o writer sem_cntl.o get_stuff.o writer.o
-#			rm -rf writer.o
 
 CLEAN:
 			rm -rf physMem.o
 			rm -rf hardware.o
 			rm -rf main.o
 			rm -rf instruction.o
+			clear

@@ -1,6 +1,6 @@
-#include "libs.h"
-#include "debug.h"
-#include "test.h"
+#include "includes/libs.h"
+#include "includes/debug.h"
+#include "includes/test.h"
 
 #include "PhysMem/physMem.h"
 #include "Hardware/hardware.h"

@@ -2,9 +2,9 @@
 #define PHYSMEM_H
 
 
-#include "../libs.h"
-#include "../debug.h"
-#include "../common.h"
+#include "../includes/libs.h"
+#include "../includes/debug.h"
+#include "../includes/common.h"
 
 
 
