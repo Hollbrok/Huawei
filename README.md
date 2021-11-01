@@ -1,4 +1,4 @@
-# Сборка
+## Сборка
     git clone https://github.com/Hollbrok/Huawei
     cd ./Huawei
     make
@@ -14,12 +14,16 @@ At this moment there is no parsing of __elf-file__ and the executed instructions
 
 __Add, Sub, Sll, Slt, Sltu, Xor, Srl, Sra, Or, And, Beq, Bne, Blt, Bge, Bltu, Bgeu, Lb, Lh, Lw, Lbu, Lhu, Ecall, Ebreak, Sb, Sh, Sw, Addi, Slti, Sltiu, Xori, Ori, Andi, Slli, Srli, Srai, Jal, Jalr, Auipc, Lui__.
 
-# TODO
+## TODO
 
 - [ ] Parsing of __elf-file__.
 
 - [ ] Correct support of processing the __x0__ register.
 
-- [ ] Опция симулятора для печати исполняемых инструкций со значениями регистров используемых/модифицируемых инструкцией. Поощряются обобщённые решения (сложный вариант).
+## EXTRA
+
+- [ ] Assembler
+
+- [ ] Disassebler
 
 
