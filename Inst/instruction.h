@@ -25,26 +25,26 @@ enum InsnClass : uint8_t //256 instruction are possible
 /* + */		kInsnAnd,
 /* + */		kInsnBeq, 		/*/ 0b1100011 */
 /* + */		kInsnBne,
-/*   */		kInsnBlt,
-/*   */		kInsnBge,
+/* + */		kInsnBlt,
+/* + */		kInsnBge,
 /*   */		kInsnBltu,
 /*   */		kInsnBgeu,
 /* + */		kInsnLb,		/* 0b0000011 */
 /* + */		kInsnLh,
 /* + */		kInsnLw,
-/*   */		kInsnLbu,
-/*   */		kInsnLhu,
-/*   */		kInsnEcall,		/* 0b1110011 */
-/*   */		kInsnEbreak,
+/* + */		kInsnLbu,
+/* + */		kInsnLhu,
+/* + */		kInsnEcall,		/* 0b1110011 */
+/* + */		kInsnEbreak,
 /* + */		kInsnSb,		/* 0b0100011 */
 /* + */		kInsnSh,
 /* + */		kInsnSw,
 /* + */		kInsnAddi,		/* 0b0010011 */
 /*   */		kInsnSlti,
 /*   */		kInsnSltiu,
-/*   */		kInsnXori,
-/*   */		kInsnOri,
-/*   */		kInsnAndi,
+/* + */		kInsnXori,
+/* + */		kInsnOri,
+/* + */		kInsnAndi,
 /* + */		kInsnSlli,
 /* + */		kInsnSrli,
 /* + */		kInsnSrai,
@@ -76,7 +76,7 @@ T getBits(T value)
     return ( ( value << (sizeof(T) * 8 - hi - 1) ) >> (sizeof(T) * 8 - hi - 1) ) >> lo ; 
 }
 
-class Instruction
+class Instruction final
 {
 private:
     Executor executor_;
@@ -118,15 +118,18 @@ public:
 
 	void executeBeq(Hardware *harw); 	/* + */
 	void executeBne(Hardware *harw); 	/* + */
-
+	void executeBlt(Hardware *harw); 	/* + */
+	void executeBge(Hardware *harw); 	/* + */
 
 
 	void executeLb(Hardware *harw);		/* + */
 	void executeLh(Hardware *harw);		/* + */
 	void executeLw(Hardware *harw);		/* + */
+	void executeLbu(Hardware *harw);	/* + */
+	void executeLhu(Hardware *harw);	/* + */
 
-
-
+	void executeEcall(Hardware *harw);
+	void executeEbreak(Hardware *harw);
 
 	void executeSb(Hardware *harw);		/* + */
 	void executeSh(Hardware *harw);		/* + */

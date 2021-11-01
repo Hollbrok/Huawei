@@ -329,7 +329,6 @@ void Instruction::executeSra(Hardware *harw)
 
 //////////////////////////////////////////////////////////////////////////
 
-
 void Instruction::executeBeq(Hardware *harw)
 {
 	std::cout << "rs_1, rs_2, imm_ " << harw->getReg(rs1_) << " " << harw->getReg(rs2_) << " " << imm_ << std::endl;
@@ -343,6 +342,21 @@ void Instruction::executeBne(Hardware *harw)
 	if (harw->getReg(rs1_) != harw->getReg(rs2_))
 	    harw->branch(imm_); 
 }
+
+void Instruction::executeBlt(Hardware *harw)
+{
+	std::cout << "rs_1, rs_2, imm_ " << harw->getReg(rs1_) << " " << harw->getReg(rs2_) << " " << imm_ << std::endl;
+	if (harw->getReg(rs1_) < harw->getReg(rs2_)) /* or rs2_ < rs1_*/
+	    harw->branch(imm_); 
+}
+
+void Instruction::executeBge(Hardware *harw)
+{
+	std::cout << "rs_1, rs_2, imm_ " << harw->getReg(rs1_) << " " << harw->getReg(rs2_) << " " << imm_ << std::endl;
+	if (harw->getReg(rs1_) >= harw->getReg(rs2_)) /* or rs2_ >= rs1_*/
+	    harw->branch(imm_); 
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 #define BYTE 1
@@ -353,20 +367,36 @@ void Instruction::executeLb(Hardware *harw)
 {
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, BYTE);
-	harw->setReg(rd_, readVal);
+	harw->setReg(rd_, readVal + getBits<7,7>(readVal) == 0b1? 0xFFFFFF00 : 0);
 }
 
 void Instruction::executeLh(Hardware *harw)
 {
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, HWORD);
-	harw->setReg(rd_, readVal);
+	harw->setReg(rd_, readVal + getBits<15,15>(readVal) == 0b1? 0xFFFF0000 : 0);
 }
 
 void Instruction::executeLw(Hardware *harw)
 {
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, WORD);
+	harw->setReg(rd_, readVal);
+}
+
+/* unsigned === if read the byte 0xFF lbu will 0-extend this value to 0x000000FF*/
+
+void Instruction::executeLbu(Hardware *harw)
+{
+	RegValue readVal;
+	harw->read(harw->getReg(rs1_) + imm_, &readVal, BYTE);
+	harw->setReg(rd_, readVal);
+}
+
+void Instruction::executeLhu(Hardware *harw)
+{
+	RegValue readVal;
+	harw->read(harw->getReg(rs1_) + imm_, &readVal, HWORD);
 	harw->setReg(rd_, readVal);
 }
 
@@ -391,6 +421,18 @@ void Instruction::executeSw(Hardware *harw)
 #undef BYTE
 #undef HWORD
 #undef WORD
+
+//////////////////////////////////////////////////////////////////////////
+
+void Instruction::executeEcall(Hardware *harw)
+{
+	harw->branch(0x80000180);
+}
+
+void Instruction::executeEbreak(Hardware *harw)
+{
+	harw->Ebreak();
+}
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -510,6 +552,12 @@ void Instruction::executor(Hardware *hardw)
 	case kInsnBne:
 		executeBne(hardw);
 		break;
+	case kInsnBlt:
+		executeBlt(hardw);
+		break;
+	case kInsnBge:
+		executeBge(hardw);
+		break;
 /////////////////////////////////////////////
 	case kInsnLb:
 		executeLb(hardw);
@@ -519,6 +567,19 @@ void Instruction::executor(Hardware *hardw)
 		break;
 	case kInsnLw:
 		executeLw(hardw);
+		break;
+	case kInsnLbu:
+		executeLbu(hardw);
+		break;
+	case kInsnLhu:
+		executeLhu(hardw);
+		break;
+/////////////////////////////////////////////
+	case kInsnEcall:
+		executeEcall(hardw);
+		break;
+	case kInsnEbreak:
+		executeEbreak(hardw);
 		break;
 /////////////////////////////////////////////
 	case kInsnSb:

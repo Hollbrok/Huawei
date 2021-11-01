@@ -8,7 +8,7 @@
 #include "../Inst/instruction.h"
 #include "../PhysMem/physMem.h"
 
-class Hardware
+class Hardware final
 {
 private:
     RegValue regs_[kRegFileGprSize];
@@ -39,6 +39,7 @@ public:
 	bool write(PhysAddr addr, RegValue value, size_t size = kInsnSize) {return physMem_->write(addr, value, size);}
 	bool read(PhysAddr addr, RegValue* value, size_t size = kInsnSize) {return physMem_->read(addr, value, size);}
 
+	void Ebreak() { assert(0 && "EBREAK"); };
 };
 
 
