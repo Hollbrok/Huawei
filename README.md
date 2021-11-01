@@ -1,8 +1,8 @@
 # Сборка
-    [ ] git clone https://github.com/Hollbrok/Huawei
-    [ ] cd ./Huawei
-    [ ] make
-    [ ] ./out [ELF_FILE]
+    git clone https://github.com/Hollbrok/Huawei
+    cd ./Huawei
+    make
+    ./out [ELF_FILE]
 
 At this moment there is no parsing of __elf-file__ and the executed instructions are written to memory manually.
 
