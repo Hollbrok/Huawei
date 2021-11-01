@@ -9,8 +9,6 @@
 class Hardware;
 class Instruction;
 
-typedef void (*Executor)(Hardware* hart, const Instruction& insn);
-
 enum InsnClass : uint8_t //256 instruction are possible
 {
 /* + */ 	kInsnAdd,		/* 0b0110011 */
@@ -82,7 +80,8 @@ const char INFO_NAMES[][20] = { "rd", "rs1", "rs2", "imm" };
 class Instruction final
 {
 private:
-    Executor executor_;
+	bool (Instruction::*executor_)(Hardware *hardw);
+	
     InsnClass insnType_;
 	RegId rd_, rs1_, rs2_;
 	RegValue imm_;
@@ -115,54 +114,58 @@ public:
 	const char* fromTypeToStr(InsnClass type);
 	void printInsnType(InsnClass type);
 
-	void executeAuipc(Hardware *harw);
-	void executeLui(Hardware *harw);
+	bool executeNOEXIST(Hardware *hardw);
 
-	void executeAdd(Hardware *harw); 	/* + */
-	void executeSub(Hardware *harw);	/* + */
-	void executeSll(Hardware *harw);	/* + */
-	void executeXor(Hardware *harw);	/* + */
-	void executeSrl(Hardware *harw);	/* + */
-	void executeSra(Hardware *harw);	/* + */
-	void executeOr (Hardware *harw);	/* + */
-	void executeAnd(Hardware *harw);	/* + */
+	bool executeAuipc(Hardware *hardw);
+	bool executeLui(Hardware *hardw);
 
-
-
-	void executeBeq(Hardware *harw); 	/* + */
-	void executeBne(Hardware *harw); 	/* + */
-	void executeBlt(Hardware *harw); 	/* + */
-	void executeBge(Hardware *harw); 	/* + */
+	bool executeAdd(Hardware *hardw); 		/* + */
+	bool executeSub(Hardware *hardw);		/* + */
+	bool executeSll(Hardware *hardw);		/* + */
+	bool executeXor(Hardware *hardw);		/* + */
+	bool executeSrl(Hardware *hardw);		/* + */
+	bool executeSra(Hardware *hardw);		/* + */
+	bool executeOr (Hardware *hardw);		/* + */
+	bool executeAnd(Hardware *hardw);		/* + */
 
 
-	void executeLb(Hardware *harw);		/* + */
-	void executeLh(Hardware *harw);		/* + */
-	void executeLw(Hardware *harw);		/* + */
-	void executeLbu(Hardware *harw);	/* + */
-	void executeLhu(Hardware *harw);	/* + */
 
-	void executeEcall(Hardware *harw);
-	void executeEbreak(Hardware *harw);
-
-	void executeSb(Hardware *harw);		/* + */
-	void executeSh(Hardware *harw);		/* + */
-	void executeSw(Hardware *harw);		/* + */
+	bool executeBeq(Hardware *hardw); 		/* + */
+	bool executeBne(Hardware *hardw); 		/* + */
+	bool executeBlt(Hardware *hardw); 		/* + */
+	bool executeBge(Hardware *hardw); 		/* + */
+	bool executeBltu(Hardware *hardw); 		/* + */
+	bool executeBgeu(Hardware *hardw); 		/* + */
 
 
-	void executeAddi(Hardware *harw); 	/* + */
-	void executeXori(Hardware *harw);
-	void executeOri (Hardware *harw);
-	void executeAndi(Hardware *harw);
-	void executeSlli(Hardware *harw);	/* + */
-	void executeSrli(Hardware *harw);	/* + */
-	void executeSrai(Hardware *harw);	/* + */
+	bool executeLb(Hardware *hardw);		/* + */
+	bool executeLh(Hardware *hardw);		/* + */
+	bool executeLw(Hardware *hardw);		/* + */
+	bool executeLbu(Hardware *hardw);		/* + */
+	bool executeLhu(Hardware *hardw);		/* + */
+
+	bool executeEcall(Hardware *hardw);		/* + */
+	bool executeEbreak(Hardware *hardw);	/* + */
+
+	bool executeSb(Hardware *hardw);		/* + */
+	bool executeSh(Hardware *hardw);		/* + */
+	bool executeSw(Hardware *hardw);		/* + */
 
 
-	void executeJal(Hardware *harw);	/* + */
-	void executeJalr(Hardware *harw);	/* + */
+	bool executeAddi(Hardware *hardw); 		/* + */
+	bool executeXori(Hardware *hardw);		/* + */
+	bool executeOri (Hardware *hardw);		/* + */
+	bool executeAndi(Hardware *hardw);		/* + */
+	bool executeSlli(Hardware *hardw);		/* + */
+	bool executeSrli(Hardware *hardw);		/* + */
+	bool executeSrai(Hardware *hardw);		/* + */
 
 
-	void executor(Hardware* hardw);
+	bool executeJal(Hardware *hardw);		/* + */
+	bool executeJalr(Hardware *hardw);		/* + */
+
+
+	bool executor(Hardware* hardw);
 
 };
 

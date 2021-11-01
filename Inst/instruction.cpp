@@ -23,7 +23,9 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		{
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			imm_ = getBits<31, 12>(insn) << 12;
+			
 			insnType_ = kInsnAuipc;
+			executor_ = &Instruction::executeAuipc;
 
 			printInfo[PI_rd] = true;
 			printInfo[PI_imm] = true;
@@ -34,7 +36,9 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		{
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			imm_ = getBits<31, 12>(insn) << 12;
+
 			insnType_ = kInsnLui;
+			executor_ = &Instruction::executeLui;
 
 			printInfo[PI_rd] = true;
 			printInfo[PI_imm] = true;
@@ -56,26 +60,56 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 
 			/* TODO: switch-case ; executor = .. */
 
-			if (funct3 == 0 && funct7 == 0) 
+			if (funct3 == 0 && funct7 == 0)
+			{
 			    insnType_ = kInsnAdd;
+				executor_ = &Instruction::executeAdd;
+			}
 			else if (funct3 == 0 && funct7 == 0b0100000)
-			    insnType_ = kInsnSub;
+			{
+				insnType_ = kInsnSub;
+				executor_ = &Instruction::executeSub;
+			}
 			else if (funct3 == 0b001 && funct7 == 0)
+			{
 			    insnType_ =  kInsnSll;
+				executor_ = &Instruction::executeSll;
+			}
 			else if (funct3 == 0b010 && funct7 == 0)
-			    insnType_ =  kInsnSlt;
+			{
+				insnType_ =  kInsnSlt;
+				executor_ = &Instruction::executeNOEXIST;
+			}		
 			else if (funct3 == 0b011 && funct7 == 0)
+			{
 			    insnType_ =  kInsnSltu;
+				executor_ = &Instruction::executeNOEXIST;
+			}
 			else if (funct3 == 0b100 && funct7 == 0)
-			    insnType_ =  kInsnXor;
+			{
+			   	insnType_ =  kInsnXor;
+				executor_ = &Instruction::executeXor;
+			}	
 			else if (funct3 == 0b101 && funct7 == 0)
+			{
 			    insnType_ =  kInsnSrl;
+				executor_ = &Instruction::executeSrl;
+			}
 			else if (funct3 == 0b101 && funct7 == 0b0100000)
+			{
 			    insnType_ =  kInsnSra;
+				executor_ = &Instruction::executeSra;
+			}
 			else if (funct3 == 0b110 && funct7 == 0)
+			{
 			    insnType_ =  kInsnOr;
+				executor_ = &Instruction::executeOr;
+			}
 			else if (funct3 == 0b111 && funct7 == 0)
-			    insnType_ =  kInsnOr;
+			{
+				insnType_ =  kInsnOr;
+				executor_ = &Instruction::executeOr;
+			}
 			else
 				assert (0);
 		    break;
@@ -98,17 +132,35 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			printInfo[PI_imm] = true;
 			
 			if (funct3 == 0b000)
+			{
 			    insnType_ = kInsnBeq;
+				executor_ = &Instruction::executeBeq;
+			}
 			else if (funct3 == 0b001)
+			{
 				insnType_ = kInsnBne;
+				executor_ = &Instruction::executeBne;
+			}
 			else if (funct3 == 0b100)
+			{
 				insnType_ = kInsnBlt;
+				executor_ = &Instruction::executeBlt;
+			}
 			else if (funct3 == 0b101)
+			{
 				insnType_ = kInsnBge;
+				executor_ = &Instruction::executeBge;
+			}
 			else if (funct3 == 0b110)
+			{
 				insnType_ = kInsnBltu;
+				executor_ = &Instruction::executeBltu;
+			}
 			else if (funct3 == 0b111)
+			{
 				insnType_ = kInsnBgeu;
+				executor_ = &Instruction::executeBgeu;
+			}
 			else
 				assert (0 && "Undefinied funct3 for PC-instruction");
 		    break;
@@ -127,15 +179,30 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			printInfo[PI_imm] = true;
 						
 			if (funct3 == 0b000)
+			{
 			    insnType_ = kInsnLb;
+				executor_ = &Instruction::executeLb;
+			}
 			else if (funct3 == 0b001)
+			{
 				insnType_ = kInsnLh;
+				executor_ = &Instruction::executeLh;
+			}
 			else if (funct3 == 0b010)
+			{
 				insnType_ = kInsnLw;
+				executor_ = &Instruction::executeLw;
+			}
 			else if (funct3 == 0b100)
+			{
 				insnType_ = kInsnLbu;
+				executor_ = &Instruction::executeLbu;
+			}
 			else if (funct3 == 0b101)
+			{
 				insnType_ = kInsnLhu;
+				executor_ = &Instruction::executeLhu;
+			}
 			else
 				assert (0 && "Undefinied funct3 for instruction");
 		    break;
@@ -154,9 +221,15 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			printInfo[PI_imm] = true;
 			
 			if (rd_ == 0 && funct3 == 0 && rs1_ == 0 && imm_ == 0)
+			{
 			    insnType_ = kInsnEcall;
+				executor_ = &Instruction::executeEcall;
+			}
 			else if (rd_ == 0 && funct3 == 0 && rs1_ == 0 && imm_ == 0b000000000001)
+			{
 				insnType_ = kInsnEbreak;
+				executor_ = &Instruction::executeEbreak;
+			}
 			else
 				assert (0 && "Undefinied instruction");
 		    break;
@@ -175,11 +248,20 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			printInfo[PI_imm] = true;
 
 			if (funct3 == 0b000)
+			{
 			    insnType_ = kInsnSb;
+				executor_ = &Instruction::executeSb;
+			}
 			else if (funct3 == 0b001)
+			{
 				insnType_ = kInsnSh;
+				executor_ = &Instruction::executeSh;
+			}
 			else if (funct3 == 0b010)
+			{
 				insnType_ = kInsnSw;
+				executor_ = &Instruction::executeSw;
+			}
 			else
 				assert (0 && "Undefinied type");
 		    break;
@@ -198,28 +280,55 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			printInfo[PI_imm] = true;
 
 			if (funct3 == 0b000)
+			{
 				insnType_ = kInsnAddi;
+				executor_ = &Instruction::executeAddi;
+			}
 			else if (funct3 == 0b010)
+			{
 				insnType_ = kInsnSlti;
+				executor_ = &Instruction::executeNOEXIST;
+			}
 			else if (funct3 == 0b011)
+			{
 				insnType_ = kInsnSltiu;
+				executor_ = &Instruction::executeNOEXIST;
+			}
 			else if (funct3 == 0b100)
+			{
 				insnType_ = kInsnXori;
+				executor_ = &Instruction::executeXori;
+			}
 			else if (funct3 == 0b110)
+			{
 				insnType_ = kInsnOri;
+				executor_ = &Instruction::executeOri;
+			}
 			else if (funct3 == 0b111)
+			{
 				insnType_ = kInsnAndi;
+				executor_ = &Instruction::executeAndi;
+			}
 			else /* logical/arithmetic shifts */
 			{
 				auto funct7 = getBits<5, 11>(imm_);
 				imm_ = getBits<0, 4>(imm_);
 
 				if (funct7 == 0 && funct3 == 0b001)
+				{
 					insnType_ = kInsnSlli;
+					executor_ = &Instruction::executeSlli;
+				}
 				else if (funct7 == 0 && funct3 == 0b101)
+				{
 					insnType_ = kInsnSrli;
+					executor_ = &Instruction::executeSrli;
+				}
 				else if (funct7 == 0b100000 && funct3 == 0b101)
+				{
 					insnType_ = kInsnSrai;
+					executor_ = &Instruction::executeSrai;
+				}
 				else
 					assert (0 && "Undefinied type");
 			}
@@ -239,7 +348,10 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			printInfo[PI_imm] = true;
 			
 			if (funct3 == 0b000)
+			{
 			    insnType_ = kInsnJalr;
+				executor_ = &Instruction::executeJalr;
+			}
 			else 
 				assert (0 && "Undefinied funct3 for instruction");
 		    break;
@@ -257,6 +369,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			printInfo[PI_imm] = true;
 
 			insnType_ = kInsnJal;
+			executor_ = &Instruction::executeJal;
 		    break;
 		}
 		default:
@@ -266,92 +379,126 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			P_BIT_NUM(opcode, 7);
 			break;
 		}
-	}
-		
+	}	
+}
+//////////////////////////////////////////////////////////////////////////
+
+bool Instruction::executeNOEXIST(Hardware *hardw)
+{
+	std::cout << "CALL INSTRUCTION WITH NO executor EXISTS\n" << std::endl;
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-void Instruction::executeAuipc(Hardware *harw)
+bool Instruction::executeAuipc(Hardware *harw)
 {
 	harw->setReg(rd_, imm_);
+	return true;
 }
 
-void Instruction::executeLui(Hardware *harw)
+bool Instruction::executeLui(Hardware *harw)
 {
 	harw->setReg(rd_, imm_ + harw->pc());
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-void Instruction::executeAdd(Hardware *harw)
+bool Instruction::executeAdd(Hardware *harw)
 {
 	harw->setReg(rd_, harw->getReg(rs1_) + harw->getReg(rs2_));
+	return true;
 }
 
-void Instruction::executeSub(Hardware *harw)
+bool Instruction::executeSub(Hardware *harw)
 {
 	harw->setReg(rd_, harw->getReg(rs2_) - harw->getReg(rs1_));
+	return true;
 }
 
-void Instruction::executeXor(Hardware *harw)
+bool Instruction::executeXor(Hardware *harw)
 {
 	harw->setReg(rd_, harw->getReg(rs2_) ^ harw->getReg(rs1_));
+	return true;
 }
 
-void Instruction::executeOr (Hardware *harw)
+bool Instruction::executeOr (Hardware *harw)
 {
 	harw->setReg(rd_, harw->getReg(rs2_) | harw->getReg(rs1_));
+	return true;
 }
 
-void Instruction::executeAnd(Hardware *harw)
+bool Instruction::executeAnd(Hardware *harw)
 {
 	harw->setReg(rd_, harw->getReg(rs2_) & harw->getReg(rs1_));
+	return true;
 }
 
 
-void Instruction::executeSll(Hardware *harw)
+bool Instruction::executeSll(Hardware *harw)
 {
 	harw->setReg(rd_, harw->getReg(rs1_) << harw->getReg(rs2_));
+	return true;
 }	
 
-void Instruction::executeSrl(Hardware *harw)
+bool Instruction::executeSrl(Hardware *harw)
 {
-	harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));	
+	harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));
+	return true;	
 }
 
-void Instruction::executeSra(Hardware *harw)
+bool Instruction::executeSra(Hardware *harw)
 {
 	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
 		harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));
 	else
 		harw->setReg(rd_, static_cast<RegValue>(static_cast<int32_t>(harw->getReg(rs1_)) >> harw->getReg(rs2_)));
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-void Instruction::executeBeq(Hardware *harw)
+bool Instruction::executeBeq(Hardware *harw)
 {
 	if (harw->getReg(rs1_) == harw->getReg(rs2_))
 	    harw->branch(imm_); 
+	return true;
 }
 
-void Instruction::executeBne(Hardware *harw)
+bool Instruction::executeBne(Hardware *harw)
 {
 	if (harw->getReg(rs1_) != harw->getReg(rs2_))
 	    harw->branch(imm_); 
+	return true;
 }
 
-void Instruction::executeBlt(Hardware *harw)
+bool Instruction::executeBlt(Hardware *harw)
 {
 	if (harw->getReg(rs1_) < harw->getReg(rs2_)) /* or rs2_ < rs1_*/
 	    harw->branch(imm_); 
+	return true;
 }
 
-void Instruction::executeBge(Hardware *harw)
+bool Instruction::executeBge(Hardware *harw)
 {
 	if (harw->getReg(rs1_) >= harw->getReg(rs2_)) /* or rs2_ >= rs1_*/
 	    harw->branch(imm_); 
+	return true;
+}
+
+bool Instruction::executeBltu(Hardware *harw)
+{
+	if (harw->getReg(rs1_) < harw->getReg(rs2_)) /* or rs2_ < rs1_*/
+	    harw->branch(getBits<11, 0>(imm_)); 
+	return true;
+}
+
+bool Instruction::executeBgeu(Hardware *harw)
+{
+	if (harw->getReg(rs1_) >= harw->getReg(rs2_)) /* or rs2_ >= rs1_*/
+	    harw->branch(getBits<11, 0>(imm_)); 
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -360,59 +507,67 @@ void Instruction::executeBge(Hardware *harw)
 #define HWORD 2
 #define WORD 4
 
-void Instruction::executeLb(Hardware *harw)
+bool Instruction::executeLb(Hardware *harw)
 {
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, BYTE);
 	harw->setReg(rd_, readVal + getBits<7,7>(readVal) == 0b1? 0xFFFFFF00 : 0);
+	return true;
 }
 
-void Instruction::executeLh(Hardware *harw)
+bool Instruction::executeLh(Hardware *harw)
 {
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, HWORD);
 	harw->setReg(rd_, readVal + getBits<15,15>(readVal) == 0b1? 0xFFFF0000 : 0);
+	return true;
 }
 
-void Instruction::executeLw(Hardware *harw)
+bool Instruction::executeLw(Hardware *harw)
 {
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, WORD);
 	harw->setReg(rd_, readVal);
+	return true;
 }
 
 /* unsigned === if read the byte 0xFF lbu will 0-extend this value to 0x000000FF*/
 
-void Instruction::executeLbu(Hardware *harw)
+bool Instruction::executeLbu(Hardware *harw)
 {
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, BYTE);
 	harw->setReg(rd_, readVal);
+	return true;
 }
 
-void Instruction::executeLhu(Hardware *harw)
+bool Instruction::executeLhu(Hardware *harw)
 {
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, HWORD);
 	harw->setReg(rd_, readVal);
+	return true;
 }
 
 /* 			LOAD	section	/\		*/
 /* 	 		STORE	section \/		*/
 
-void Instruction::executeSb(Hardware *harw)
+bool Instruction::executeSb(Hardware *harw)
 {
 	harw->write(harw->getReg(rs1_) + imm_, harw->getReg(rs2_), BYTE);
+	return true;
 }
 
-void Instruction::executeSh(Hardware *harw)
+bool Instruction::executeSh(Hardware *harw)
 {
 	harw->write(harw->getReg(rs1_) + imm_, harw->getReg(rs2_), HWORD);
+	return true;
 }
 
-void Instruction::executeSw(Hardware *harw)
+bool Instruction::executeSw(Hardware *harw)
 {
 	harw->write(harw->getReg(rs1_) + imm_, harw->getReg(rs2_), WORD);
+	return true;
 }
 
 #undef BYTE
@@ -421,75 +576,86 @@ void Instruction::executeSw(Hardware *harw)
 
 //////////////////////////////////////////////////////////////////////////
 
-void Instruction::executeEcall(Hardware *harw)
+bool Instruction::executeEcall(Hardware *harw)
 {
 	harw->branch(0x80000180);
+	return true;
 }
 
-void Instruction::executeEbreak(Hardware *harw)
+bool Instruction::executeEbreak(Hardware *harw)
 {
 	harw->Ebreak();
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-void Instruction::executeAddi(Hardware *harw)
+bool Instruction::executeAddi(Hardware *harw)
 {	
-	harw->setReg(rd_, harw->getReg(rs1_) + imm_);	
+	harw->setReg(rd_, harw->getReg(rs1_) + imm_);
+	return true;	
 }
 
-void Instruction::executeXori(Hardware *harw)
+bool Instruction::executeXori(Hardware *harw)
 {
 	harw->setReg(rd_, imm_ ^ harw->getReg(rs1_));
+	return true;
 }
 
-void Instruction::executeOri (Hardware *harw)
+bool Instruction::executeOri (Hardware *harw)
 {
 	harw->setReg(rd_, imm_ | harw->getReg(rs1_));
+	return true;
 }
 
-void Instruction::executeAndi(Hardware *harw)
+bool Instruction::executeAndi(Hardware *harw)
 {
 	harw->setReg(rd_, imm_ & harw->getReg(rs1_));
+	return true;
 }
 
-void Instruction::executeSlli(Hardware *harw)
+bool Instruction::executeSlli(Hardware *harw)
 {
 	harw->setReg(rd_, harw->getReg(rs1_) << imm_);
+	return true;
 }
 
-void Instruction::executeSrli(Hardware *harw)
+bool Instruction::executeSrli(Hardware *harw)
 {
 	harw->setReg(rd_, harw->getReg(rs1_) >> imm_);
+	return true;
 }
 
-void Instruction::executeSrai(Hardware *harw)
+bool Instruction::executeSrai(Hardware *harw)
 {
 	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
 		harw->setReg(rd_, harw->getReg(rs1_) >> imm_);
 	else
 		harw->setReg(rd_, static_cast<RegValue>( static_cast<int32_t>(harw->getReg(rs1_)) >> imm_ ));
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 
-void Instruction::executeJal(Hardware *harw)
+bool Instruction::executeJal(Hardware *harw)
 {
 	harw->setReg(rd_, harw->pc() + 4);
 	harw->branch(imm_);
+	return true;
 }
 
-void Instruction::executeJalr(Hardware *harw)
+bool Instruction::executeJalr(Hardware *harw)
 {
 	harw->setReg(rd_, harw->pc() + 4);
 	harw->branch(imm_ + harw->getReg(rd_));
+	return true;
 }
 
 
 //////////////////////////////////////////////////////////////////////////
 
-void Instruction::executor(Hardware *hardw) 
+bool Instruction::executor(Hardware *hardw) 
 {
 	if (DEBUG_REGIME)
 		std::cout << "type of insn = " << fromTypeToStr(insnType_) << std::endl;
@@ -507,7 +673,15 @@ void Instruction::executor(Hardware *hardw)
 			P_NUM(imm_)
 	}
 
-	switch (insnType_)
+	if ( !(*this.*executor_)(hardw) )
+	{
+		std::cout << "FAILED" << std::endl;
+		return false;
+	}
+
+	return true;
+
+	/*switch (insnType_)
 	{
 	case insnERROR:
 		std::cout << "insnError" << std::endl;
@@ -614,7 +788,8 @@ void Instruction::executor(Hardware *hardw)
 /////////////////////////////////////////////
 	default:
 		std::cout << "undefinied [instruction type = " << fromTypeToStr(insnType_) << "] LINE :" << __LINE__ << std::endl;
-		assert(0);
+		return false;
 		break;
-	}
+	}*/
+
 } 
