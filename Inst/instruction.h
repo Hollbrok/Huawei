@@ -76,6 +76,9 @@ T getBits(T value)
     return ( ( value << (sizeof(T) * 8 - hi - 1) ) >> (sizeof(T) * 8 - hi - 1) ) >> lo ; 
 }
 
+enum PrintInfo { PI_rd, PI_rs1, PI_rs2, PI_imm, PI_size };
+const char INFO_NAMES[][20] = { "rd", "rs1", "rs2", "imm" };
+
 class Instruction final
 {
 private:
@@ -83,7 +86,11 @@ private:
     InsnClass insnType_;
 	RegId rd_, rs1_, rs2_;
 	RegValue imm_;
+
+	
+
 	bool needDebug_;
+	bool printInfo[PI_size] = {0};
 
 public:
 

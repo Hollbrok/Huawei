@@ -18,14 +18,16 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 	insnType_ = insnERROR;
 	switch (insn & 0x7F) /* 1st seven bits*/
 	{
-		case 0:
-		    break;
 		// R-format insns
 		case 0b0010111:
 		{
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			imm_ = getBits<31, 12>(insn) << 12;
 			insnType_ = kInsnAuipc;
+
+			printInfo[PI_rd] = true;
+			printInfo[PI_imm] = true;
+
 			break;
 		}
 		case 0b0110111:
@@ -33,6 +35,10 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			imm_ = getBits<31, 12>(insn) << 12;
 			insnType_ = kInsnLui;
+
+			printInfo[PI_rd] = true;
+			printInfo[PI_imm] = true;
+
 			break;
 		}
 		case 0b0110011: /* DONE [only function realization needed] */
@@ -44,6 +50,10 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			auto funct3 = getBits<14, 12>(insn);
 			auto funct7 = getBits<31, 25>(insn);
 			
+			printInfo[PI_rd] = true;
+			printInfo[PI_rs1] = true;
+			printInfo[PI_rs2] = true;
+
 			/* TODO: switch-case ; executor = .. */
 
 			if (funct3 == 0 && funct7 == 0) 
@@ -70,27 +80,22 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 				assert (0);
 		    break;
         }
-        case 0b1100011: /* PC (Branch) */
+        case 0b1100011: /* BEQ BNE BLT BGE BLTU BGEU */
 		{
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
-
-			auto testval1 = getBits<11, 8>(insn) << 1;
-
-			P_BIT_NUM(testval1, 4);
-
-			auto testval2 = getBits<7, 7>(insn) << 11;
-
-			P_BIT_NUM(testval2, 1);
-
-			auto testval3 = getBits<30, 25>(insn) << 5;
-			auto testval4 = getBits<31, 31>(insn) << 12;
 			
-			std::cout << "pc = " << pc << std::endl;
-			imm_ = testval1 + testval2 + testval3 + testval4 + pc;
+			/* only possible jump available */
+			imm_ = (getBits<11, 8>(insn) << 1) + (getBits<7, 7>(insn) << 11) + 
+					(getBits<30, 25>(insn) << 5) + (getBits<0, 0>(static_cast<URegValue>(insn)) >> 31) + pc;		
 
 			auto funct3 = getBits<14, 12>(insn);
+
+			printInfo[PI_rd] = true;
+			printInfo[PI_rs1] = true;
+			printInfo[PI_rs2] = true;
+			printInfo[PI_imm] = true;
 			
 			if (funct3 == 0b000)
 			    insnType_ = kInsnBeq;
@@ -108,14 +113,18 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 				assert (0 && "Undefinied funct3 for PC-instruction");
 		    break;
         }
-		case 0b0000011: /* LB lH LW LBU LHU */ 
+		case 0b0000011: /* LB LH LW LBU LHU */ 
 		{
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 
-			imm_ = getBits<31, 20>(insn);
+			imm_ = getBits<11, 0>( static_cast<URegValue>(insn) >> 20 ); // static_cast<RegId>
 			
 			auto funct3 = getBits<14, 12>(insn);
+
+			printInfo[PI_rd] = true;
+			printInfo[PI_rs1] = true;
+			printInfo[PI_imm] = true;
 						
 			if (funct3 == 0b000)
 			    insnType_ = kInsnLb;
@@ -139,6 +148,10 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			imm_ = getBits<31, 20>(insn);
 			
 			auto funct3 = getBits<14, 12>(insn);
+
+			printInfo[PI_rd] = true;
+			printInfo[PI_rs1] = true;
+			printInfo[PI_imm] = true;
 			
 			if (rd_ == 0 && funct3 == 0 && rs1_ == 0 && imm_ == 0)
 			    insnType_ = kInsnEcall;
@@ -152,10 +165,14 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		{
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
-					
-			imm_ = getBits<11, 7>(insn) + getBits<31, 25>(insn) << 5;
+			
+			imm_ = getBits<11, 7>(insn) + getBits<6, 0>(static_cast<URegValue>(insn) >> 25) << 5;
 
 			auto funct3 = getBits<14, 12>(insn);
+
+			printInfo[PI_rs1] = true;
+			printInfo[PI_rs2] = true;
+			printInfo[PI_imm] = true;
 
 			if (funct3 == 0b000)
 			    insnType_ = kInsnSb;
@@ -172,9 +189,13 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 
-			imm_ = 	static_cast<RegId> (getBits<31, 20>(insn));
+			imm_ = getBits<11, 0>( static_cast<URegValue>(insn) >> 20 ); // static_cast<RegId> 
 
 			auto funct3 = getBits<14, 12>(insn);
+
+			printInfo[PI_rd] = true;
+			printInfo[PI_rs1] = true;
+			printInfo[PI_imm] = true;
 
 			if (funct3 == 0b000)
 				insnType_ = kInsnAddi;
@@ -209,9 +230,13 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 
-			imm_ = getBits<31, 20>(insn);
+			imm_ = getBits<11, 0>( static_cast<URegValue>(insn) >> 20 ); // static_cast<RegId> 
 
 			auto funct3 = getBits<14, 12>(insn);
+
+			printInfo[PI_rd] = true;
+			printInfo[PI_rs1] = true;
+			printInfo[PI_imm] = true;
 			
 			if (funct3 == 0b000)
 			    insnType_ = kInsnJalr;
@@ -223,10 +248,13 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		{
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			
-			uint32_t retImm = getBits<31, 12>(insn);
+			uint32_t retImm = getBits<19, 0>(static_cast<URegValue>(insn) >> 12);//getBits<31, 12>(insn);
 
 			imm_ = (getBits<20, 20>(retImm) << 20) + (getBits<19, 9>(retImm) << 1) 
-				 + (getBits<8 ,  8>(retImm) << 11) + (getBits<0 , 7>(retImm) << 12) + pc;
+				 + (getBits<8 ,  8>(retImm) << 11) + (getBits<7 , 0>(retImm) << 12) + pc;
+
+			printInfo[PI_rd] = true;
+			printInfo[PI_imm] = true;
 
 			insnType_ = kInsnJal;
 		    break;
@@ -239,30 +267,18 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			break;
 		}
 	}
+		
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 void Instruction::executeAuipc(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_NUM(rd_)
-		P_NUM(imm_)
-	}
-
 	harw->setReg(rd_, imm_);
 }
 
 void Instruction::executeLui(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_NUM(rd_)
-		P_NUM(imm_)
-	}
 	harw->setReg(rd_, imm_ + harw->pc());
 }
 
@@ -270,98 +286,42 @@ void Instruction::executeLui(Hardware *harw)
 
 void Instruction::executeAdd(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-	}
 	harw->setReg(rd_, harw->getReg(rs1_) + harw->getReg(rs2_));
 }
 
 void Instruction::executeSub(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-	}
 	harw->setReg(rd_, harw->getReg(rs2_) - harw->getReg(rs1_));
 }
 
 void Instruction::executeXor(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-	}
 	harw->setReg(rd_, harw->getReg(rs2_) ^ harw->getReg(rs1_));
 }
 
 void Instruction::executeOr (Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-	}
 	harw->setReg(rd_, harw->getReg(rs2_) | harw->getReg(rs1_));
 }
 
 void Instruction::executeAnd(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-	}
 	harw->setReg(rd_, harw->getReg(rs2_) & harw->getReg(rs1_));
 }
 
 
 void Instruction::executeSll(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-	}
 	harw->setReg(rd_, harw->getReg(rs1_) << harw->getReg(rs2_));
 }	
 
 void Instruction::executeSrl(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-	}
 	harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));	
 }
 
 void Instruction::executeSra(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-	}
 	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
 		harw->setReg(rd_, harw->getReg(rs1_) >> harw->getReg(rs2_));
 	else
@@ -372,52 +332,24 @@ void Instruction::executeSra(Hardware *harw)
 
 void Instruction::executeBeq(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-		P_NUM(imm_)
-	}
 	if (harw->getReg(rs1_) == harw->getReg(rs2_))
 	    harw->branch(imm_); 
 }
 
 void Instruction::executeBne(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-		P_NUM(imm_)
-	}
 	if (harw->getReg(rs1_) != harw->getReg(rs2_))
 	    harw->branch(imm_); 
 }
 
 void Instruction::executeBlt(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-		P_NUM(imm_)
-	}
 	if (harw->getReg(rs1_) < harw->getReg(rs2_)) /* or rs2_ < rs1_*/
 	    harw->branch(imm_); 
 }
 
 void Instruction::executeBge(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-		P_NUM(imm_)
-	}
 	if (harw->getReg(rs1_) >= harw->getReg(rs2_)) /* or rs2_ >= rs1_*/
 	    harw->branch(imm_); 
 }
@@ -430,15 +362,6 @@ void Instruction::executeBge(Hardware *harw)
 
 void Instruction::executeLb(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, BYTE);
 	harw->setReg(rd_, readVal + getBits<7,7>(readVal) == 0b1? 0xFFFFFF00 : 0);
@@ -446,15 +369,6 @@ void Instruction::executeLb(Hardware *harw)
 
 void Instruction::executeLh(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, HWORD);
 	harw->setReg(rd_, readVal + getBits<15,15>(readVal) == 0b1? 0xFFFF0000 : 0);
@@ -462,15 +376,6 @@ void Instruction::executeLh(Hardware *harw)
 
 void Instruction::executeLw(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, WORD);
 	harw->setReg(rd_, readVal);
@@ -480,15 +385,6 @@ void Instruction::executeLw(Hardware *harw)
 
 void Instruction::executeLbu(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, BYTE);
 	harw->setReg(rd_, readVal);
@@ -496,15 +392,6 @@ void Instruction::executeLbu(Hardware *harw)
 
 void Instruction::executeLhu(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
 	RegValue readVal;
 	harw->read(harw->getReg(rs1_) + imm_, &readVal, HWORD);
 	harw->setReg(rd_, readVal);
@@ -515,43 +402,16 @@ void Instruction::executeLhu(Hardware *harw)
 
 void Instruction::executeSb(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-		P_NUM(imm_)
-	}
 	harw->write(harw->getReg(rs1_) + imm_, harw->getReg(rs2_), BYTE);
 }
 
 void Instruction::executeSh(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-		P_NUM(imm_)
-	}
 	harw->write(harw->getReg(rs1_) + imm_, harw->getReg(rs2_), HWORD);
 }
 
 void Instruction::executeSw(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rs2_)
-		P_NUM(imm_)
-	}
 	harw->write(harw->getReg(rs1_) + imm_, harw->getReg(rs2_), WORD);
 }
 
@@ -563,125 +423,48 @@ void Instruction::executeSw(Hardware *harw)
 
 void Instruction::executeEcall(Hardware *harw)
 {
-	if (needDebug_)
-		printInsnType(insnType_);
-
 	harw->branch(0x80000180);
 }
 
 void Instruction::executeEbreak(Hardware *harw)
 {
-	if (needDebug_)
-		printInsnType(insnType_);
-
 	harw->Ebreak();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 void Instruction::executeAddi(Hardware *harw)
-{
-	P_BIT_NUM(imm_, 32);
-
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	
-	P_BIT_NUM(imm_, 32);
-
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(static_cast<int32_t>(imm_))
-	}
+{	
 	harw->setReg(rd_, harw->getReg(rs1_) + imm_);	
-	P_REG_VAL(rd_);
 }
 
 void Instruction::executeXori(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(static_cast<int32_t>(imm_))
-	}
 	harw->setReg(rd_, imm_ ^ harw->getReg(rs1_));
 }
 
 void Instruction::executeOri (Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
 	harw->setReg(rd_, imm_ | harw->getReg(rs1_));
 }
 
 void Instruction::executeAndi(Hardware *harw)
 {
-	if (getBits<11, 11>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111000000000000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
 	harw->setReg(rd_, imm_ & harw->getReg(rs1_));
 }
 
 void Instruction::executeSlli(Hardware *harw)
 {
-	if (getBits<4, 4>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111111111100000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
 	harw->setReg(rd_, harw->getReg(rs1_) << imm_);
 }
 
 void Instruction::executeSrli(Hardware *harw)
 {
-	if (getBits<4, 4>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111111111100000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
 	harw->setReg(rd_, harw->getReg(rs1_) >> imm_);
 }
 
 void Instruction::executeSrai(Hardware *harw)
 {
-	if (getBits<4, 4>(imm_) == 0b1)
-		imm_ += 0b11111111111111111111111111100000;
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rs1_)
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
-	//auto shift = getBits<4, 0> (imm_);
-	
 	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
 		harw->setReg(rd_, harw->getReg(rs1_) >> imm_);
 	else
@@ -693,26 +476,12 @@ void Instruction::executeSrai(Hardware *harw)
 
 void Instruction::executeJal(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
-
 	harw->setReg(rd_, harw->pc() + 4);
 	harw->branch(imm_);
 }
 
 void Instruction::executeJalr(Hardware *harw)
 {
-	if (needDebug_)
-	{
-		printInsnType(insnType_);
-		P_REG_VAL(rd_)
-		P_NUM(imm_)
-	}
-
 	harw->setReg(rd_, harw->pc() + 4);
 	harw->branch(imm_ + harw->getReg(rd_));
 }
@@ -724,6 +493,19 @@ void Instruction::executor(Hardware *hardw)
 {
 	if (DEBUG_REGIME)
 		std::cout << "type of insn = " << fromTypeToStr(insnType_) << std::endl;
+
+	if(needDebug_)
+	{
+		printInsnType(insnType_);
+		if (printInfo[PI_rd])
+			P_REG_VAL("rd", rd_)
+		if (printInfo[PI_rs1])
+			P_REG_VAL("rs1", rs1_)
+		if (printInfo[PI_rs2])
+			P_REG_VAL("rs2", rs2_)
+		if (printInfo[PI_imm])
+			P_NUM(imm_)
+	}
 
 	switch (insnType_)
 	{

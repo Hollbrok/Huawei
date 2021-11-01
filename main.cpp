@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     EncodedInsn add2     = 0b00000000000100010000000110110011;
     EncodedInsn srl      = 0b00000000000100011101000110110011;
     EncodedInsn sll      = 0b00000000000100011001000110110011;
-    EncodedInsn testROMA = 0b11111110000000010000000100010011;
+    EncodedInsn testROMA = 0b11111111111100010000000100010011;
 
     physMem.write(0, begInsn1);
     physMem.write(4, jal);
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
     Hardware hardWare{&physMem, true};
     hardWare.setReg(kX1, 3);
-    hardWare.setReg(kX2, 5);
+    hardWare.setReg(kX2, 10000);
     hardWare.setReg(kX8, 13);
     hardWare.setReg(kX9, 12);
 
@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
     std::cout << "result of execute() = " << result << std::endl; 
 
     std::cout << "kX3 = " << hardWare.getReg(kX3) << std::endl;
+    std::cout << "kX2 = " << hardWare.getReg(kX2) << std::endl;
 
 
     exit(EXIT_SUCCESS);

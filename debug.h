@@ -53,8 +53,8 @@
 #define P_NUM(num)          \
     std::cout << #num << " = " << num << std::endl;
 
-#define P_REG_VAL(regId)    \
-    std::cout << #regId << "(x" << regId << ") = " << harw->getReg(regId) << std::endl;
+#define P_REG_VAL(msg, regId)    \
+    std::cout << msg << "(x" << regId << ") = " << hardw->getReg(regId) << std::endl;
 
 
 
