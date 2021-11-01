@@ -8,7 +8,7 @@ typedef uint32_t PhysAddr;
 typedef uint32_t VirtAddr;
 
 typedef uint32_t RegValue;
-typedef int32_t URegValue;
+typedef int32_t SRegValue;
 typedef uint32_t EncodedInsn;
 
 

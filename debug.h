@@ -50,8 +50,9 @@
 #define ERR_HANDLER(msg)    \
     do { perror(msg); exit(EXIT_FAILURE); } while(0)
 
-#define P_NUM(num)          \
-    std::cout << #num << " = " << num << std::endl;
+#define P_NUM(num, isSigned)          \
+    if (isSigned) std::cout << #num << " = " << static_cast<SRegValue>(num) << std::endl; \
+    else std::cout << #num << " = " << num << std::endl;
 
 #define P_REG_VAL(msg, regId)    \
     std::cout << msg << "(x" << regId << ") = " << hardw->getReg(regId) << std::endl;

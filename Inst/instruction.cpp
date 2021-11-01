@@ -116,17 +116,15 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
         }
         case 0b1100011: /* BEQ BNE BLT BGE BLTU BGEU */
 		{
-			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
 			
 			/* only possible jump available */
 			imm_ = (getBits<11, 8>(insn) << 1) + (getBits<7, 7>(insn) << 11) + 
-					(getBits<30, 25>(insn) << 5) + (getBits<0, 0>(static_cast<URegValue>(insn)) >> 31) + pc;		
+					(getBits<30, 25>(insn) << 5) + (getBits<0, 0>(static_cast<SRegValue>(insn)) >> 31) + pc;		
 
 			auto funct3 = getBits<14, 12>(insn);
 
-			printInfo[PI_rd] = true;
 			printInfo[PI_rs1] = true;
 			printInfo[PI_rs2] = true;
 			printInfo[PI_imm] = true;
@@ -170,7 +168,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 
-			imm_ = getBits<11, 0>( static_cast<URegValue>(insn) >> 20 ); // static_cast<RegId>
+			imm_ = getBits<11, 0>( static_cast<SRegValue>(insn) >> 20 ); // static_cast<RegId>
 			
 			auto funct3 = getBits<14, 12>(insn);
 
@@ -239,7 +237,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
 			
-			imm_ = getBits<11, 7>(insn) + getBits<6, 0>(static_cast<URegValue>(insn) >> 25) << 5;
+			imm_ = getBits<11, 7>(insn) + getBits<6, 0>(static_cast<SRegValue>(insn) >> 25) << 5;
 
 			auto funct3 = getBits<14, 12>(insn);
 
@@ -271,7 +269,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 
-			imm_ = getBits<11, 0>( static_cast<URegValue>(insn) >> 20 ); // static_cast<RegId> 
+			imm_ = getBits<11, 0>( static_cast<SRegValue>(insn) >> 20 ); // static_cast<RegId> 
 
 			auto funct3 = getBits<14, 12>(insn);
 
@@ -339,7 +337,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 
-			imm_ = getBits<11, 0>( static_cast<URegValue>(insn) >> 20 ); // static_cast<RegId> 
+			imm_ = getBits<11, 0>( static_cast<SRegValue>(insn) >> 20 ); // static_cast<RegId> 
 
 			auto funct3 = getBits<14, 12>(insn);
 
@@ -360,7 +358,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		{
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			
-			uint32_t retImm = getBits<19, 0>(static_cast<URegValue>(insn) >> 12);//getBits<31, 12>(insn);
+			uint32_t retImm = getBits<19, 0>(static_cast<SRegValue>(insn) >> 12);//getBits<31, 12>(insn);
 
 			imm_ = (getBits<20, 20>(retImm) << 20) + (getBits<19, 9>(retImm) << 1) 
 				 + (getBits<8 ,  8>(retImm) << 11) + (getBits<7 , 0>(retImm) << 12) + pc;
@@ -657,12 +655,10 @@ bool Instruction::executeJalr(Hardware *harw)
 
 bool Instruction::executor(Hardware *hardw) 
 {
-	if (DEBUG_REGIME)
-		std::cout << "type of insn = " << fromTypeToStr(insnType_) << std::endl;
-
-	if(needDebug_)
+	if (needDebug_)
 	{
-		printInsnType(insnType_);
+		std::cout << "\t\t Before execute [" << fromTypeToStr(insnType_) << "] : " << std::endl;
+
 		if (printInfo[PI_rd])
 			P_REG_VAL("rd", rd_)
 		if (printInfo[PI_rs1])
@@ -670,7 +666,7 @@ bool Instruction::executor(Hardware *hardw)
 		if (printInfo[PI_rs2])
 			P_REG_VAL("rs2", rs2_)
 		if (printInfo[PI_imm])
-			P_NUM(imm_)
+			P_NUM(imm_, 1)
 	}
 
 	if ( !(*this.*executor_)(hardw) )
@@ -679,6 +675,19 @@ bool Instruction::executor(Hardware *hardw)
 		return false;
 	}
 
+	if (needDebug_)
+	{
+		std::cout << "\t\t After execute: " << std::endl;
+
+		if (printInfo[PI_rd])
+			P_REG_VAL("rd", rd_)
+		if (printInfo[PI_rs1])
+			P_REG_VAL("rs1", rs1_)
+		if (printInfo[PI_rs2])
+			P_REG_VAL("rs2", rs2_)
+		if (printInfo[PI_imm])
+			P_NUM(imm_, 1)
+	}
 	return true;
 
 	/*switch (insnType_)

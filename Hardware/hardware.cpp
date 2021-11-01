@@ -17,11 +17,12 @@ bool Hardware::execute()
 
         if (physMem_->read(pc_, &insnCode)) // 3rd arg = kInsnSize
 		{    // TODO: exception
+			std::cout << "/////////////////////////////////////////////// \n" << std::endl;
 		     return false;
 		}
 
 		if (insnCode == 0) /* no more commands */
-			return true;
+			break;
 		
 		Instruction insn(insnCode, pc_);
 		insn.setDebugRegime(needDebug_);
@@ -29,15 +30,20 @@ bool Hardware::execute()
 		nextPc_ = pc_ + kInsnSize;
 		
 		if (needDebug_)
-			std::cout << "before execute insn: pc = " << pc_ << std::endl;
+			std::cout << "/////////////////////////////////////////////// \n\n\t\t insn PC = " << pc_ << std::endl << std::endl;
 		
-		insn.executor(this);
-		
+		if (!insn.executor(this))
+		{
+				std::cout << "/////////////////////////////////////////////// \n" << std::endl;
+				return false;
+		}
 		pc_ = nextPc_; 
 		
 		if (needDebug_)
-			std::cout << "after executed insn: pc = " << pc_ << std::endl;
+			std::cout << std::endl;
     }
+
+	std::cout << "///////////////////////////////////////////////\n" << std::endl;
 
     return true;
 }
