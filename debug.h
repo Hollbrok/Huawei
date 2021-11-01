@@ -53,6 +53,10 @@
 #define P_NUM(num)          \
     std::cout << #num << " = " << num << std::endl;
 
+#define P_REG_VAL(regId)    \
+    std::cout << #regId << "(x" << regId << ") = " << harw->getReg(regId) << std::endl;
+
+
 
 #define P_BIT_NUM(num, bits)                        \
     do{std::bitset<bits> num_b(num);                \

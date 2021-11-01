@@ -1,10 +1,11 @@
 #include "hardware.h"
 
-Hardware::Hardware(PhysMem *physMem) :
+Hardware::Hardware(PhysMem *physMem, bool needDebug) :
 	regs_    {},
 	pc_      {0},
 	nextPc_  {0},
-	physMem_ {physMem}
+	physMem_ {physMem},
+	needDebug_{needDebug}
 {
 }
 
@@ -23,12 +24,19 @@ bool Hardware::execute()
 			return true;
 		
 		Instruction insn(insnCode, pc_);
+		insn.setDebugRegime(needDebug_);
 
 		nextPc_ = pc_ + kInsnSize;
-		std::cout << "before execute insn pc = " << pc_ << std::endl;
+		
+		if (needDebug_)
+			std::cout << "before execute insn: pc = " << pc_ << std::endl;
+		
 		insn.executor(this);
+		
 		pc_ = nextPc_; 
-		std::cout << "after executed insn pc = " << pc_ << std::endl;
+		
+		if (needDebug_)
+			std::cout << "after executed insn: pc = " << pc_ << std::endl;
     }
 
     return true;

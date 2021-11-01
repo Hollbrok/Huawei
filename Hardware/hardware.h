@@ -15,10 +15,11 @@ private:
 	RegValue pc_;
 	RegValue nextPc_;
 	PhysMem *physMem_; // & => *
+	bool needDebug_;
 
 public:
 
-	Hardware(PhysMem *physMem);
+	Hardware(PhysMem *physMem, bool needDebug = false);
 
 // GETTERS
 

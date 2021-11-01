@@ -83,10 +83,15 @@ private:
     InsnClass insnType_;
 	RegId rd_, rs1_, rs2_;
 	RegValue imm_;
+	bool needDebug_;
 
 public:
 
     Instruction(EncodedInsn insn, RegValue pc);
+
+// SETTERS
+
+	void setDebugRegime(bool regime) {needDebug_ = regime;}
 
 // GETTERS
 
@@ -101,6 +106,7 @@ public:
 // OTHER
 
 	const char* fromTypeToStr(InsnClass type);
+	void printInsnType(InsnClass type);
 
 	void executeAuipc(Hardware *harw);
 	void executeLui(Hardware *harw);

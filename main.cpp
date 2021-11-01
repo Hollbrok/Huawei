@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     EncodedInsn begInsn1 = 0b00000000100101000000011001100011; /* (if x8 == x9) jump + 12 */
     //EncodedInsn begInsn2 = 0b00000000100101001000010001100011; /* (if x8 == x8) jump + 8 */
-    EncodedInsn jal      = 0b00000000100000000000011001101111; /* jump + [8 or 12; I can change], last pc saved in x12 */
+    EncodedInsn jal      = 0b00000000010000000000011001101111; /* jump + [8 or 12; I can change], last pc saved in x12 */
     EncodedInsn add1     = 0b00000000000100001000000010110011;
     EncodedInsn add2     = 0b00000000000100010000000110110011;
     EncodedInsn srl      = 0b00000000000100011101000110110011;
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
     //physMem.write(16, 8599);
 
-    Hardware hardWare{&physMem};
+    Hardware hardWare{&physMem, true};
     hardWare.setReg(kX1, 3);
     hardWare.setReg(kX2, 5);
     hardWare.setReg(kX8, 13);
