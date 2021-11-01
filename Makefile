@@ -2,9 +2,6 @@
 
 all: MAIN CLEAN
 
-#sem_cntl.o: sem_cntl.c
-#			gcc -c $(FLAGS) -o sem_cntl.o sem_cntl.c
-
 ./PhysMem/physMem.o:
 			g++ -c -o physMem.o PhysMem/physMem.cpp
 
