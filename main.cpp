@@ -32,17 +32,19 @@ int main(int argc, char *argv[])
 
     EncodedInsn begInsn1 = 0b00000000100101000000011001100011; /* (if x8 == x9) jump + 12 */
     //EncodedInsn begInsn2 = 0b00000000100101001000010001100011; /* (if x8 == x8) jump + 8 */
-    EncodedInsn jal      = 0b00000000010000000000011001101111; /* jump + [8 or 12; I can change], last pc saved in x12 */
+    EncodedInsn jal      = 0b00000000100000000000011001101111; /* jump + [8 or 12; I can change], last pc saved in x12 */
     EncodedInsn add1     = 0b00000000000100001000000010110011;
     EncodedInsn add2     = 0b00000000000100010000000110110011;
     EncodedInsn srl      = 0b00000000000100011101000110110011;
     EncodedInsn sll      = 0b00000000000100011001000110110011;
+    EncodedInsn testROMA = 0b11111110000000010000000100010011;
 
     physMem.write(0, begInsn1);
     physMem.write(4, jal);
     physMem.write(8, add1);
     physMem.write(12, add2);
     physMem.write(16, sll);
+    physMem.write(20, testROMA);
 
     //P_BIT_NUM(8599, 32);
 

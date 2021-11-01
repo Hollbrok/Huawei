@@ -177,7 +177,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			auto funct3 = getBits<14, 12>(insn);
 
 			if (funct3 == 0b000)
-			    insnType_ = kInsnAddi;
+				insnType_ = kInsnAddi;
 			else if (funct3 == 0b010)
 				insnType_ = kInsnSlti;
 			else if (funct3 == 0b011)
@@ -191,6 +191,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			else /* logical/arithmetic shifts */
 			{
 				auto funct7 = getBits<5, 11>(imm_);
+				imm_ = getBits<0, 4>(imm_);
 
 				if (funct7 == 0 && funct3 == 0b001)
 					insnType_ = kInsnSlli;
@@ -201,6 +202,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 				else
 					assert (0 && "Undefinied type");
 			}
+			break;
 		}
 		case 0b1100111:
 		{
@@ -234,6 +236,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			auto opcode = (insn & 0x7F);
 			std::cout << "Undefinied opcode = " << opcode << std::endl;
 			P_BIT_NUM(opcode, 7);
+			break;
 		}
 	}
 }
@@ -427,6 +430,8 @@ void Instruction::executeBge(Hardware *harw)
 
 void Instruction::executeLb(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -441,6 +446,8 @@ void Instruction::executeLb(Hardware *harw)
 
 void Instruction::executeLh(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -455,6 +462,8 @@ void Instruction::executeLh(Hardware *harw)
 
 void Instruction::executeLw(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -471,6 +480,8 @@ void Instruction::executeLw(Hardware *harw)
 
 void Instruction::executeLbu(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -485,6 +496,8 @@ void Instruction::executeLbu(Hardware *harw)
 
 void Instruction::executeLhu(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -502,6 +515,8 @@ void Instruction::executeLhu(Hardware *harw)
 
 void Instruction::executeSb(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -514,6 +529,8 @@ void Instruction::executeSb(Hardware *harw)
 
 void Instruction::executeSh(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -526,6 +543,8 @@ void Instruction::executeSh(Hardware *harw)
 
 void Instruction::executeSw(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -562,30 +581,42 @@ void Instruction::executeEbreak(Hardware *harw)
 
 void Instruction::executeAddi(Hardware *harw)
 {
+	P_BIT_NUM(imm_, 32);
+
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
+	
+	P_BIT_NUM(imm_, 32);
+
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
 		P_REG_VAL(rs1_)
 		P_REG_VAL(rd_)
-		P_NUM(imm_)
+		P_NUM(static_cast<int32_t>(imm_))
 	}
 	harw->setReg(rd_, harw->getReg(rs1_) + imm_);	
+	P_REG_VAL(rd_);
 }
 
 void Instruction::executeXori(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
 		P_REG_VAL(rs1_)
 		P_REG_VAL(rd_)
-		P_NUM(imm_)
+		P_NUM(static_cast<int32_t>(imm_))
 	}
 	harw->setReg(rd_, imm_ ^ harw->getReg(rs1_));
 }
 
 void Instruction::executeOri (Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -598,6 +629,8 @@ void Instruction::executeOri (Hardware *harw)
 
 void Instruction::executeAndi(Hardware *harw)
 {
+	if (getBits<11, 11>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111000000000000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -610,6 +643,8 @@ void Instruction::executeAndi(Hardware *harw)
 
 void Instruction::executeSlli(Hardware *harw)
 {
+	if (getBits<4, 4>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111111111100000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -622,6 +657,8 @@ void Instruction::executeSlli(Hardware *harw)
 
 void Instruction::executeSrli(Hardware *harw)
 {
+	if (getBits<4, 4>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111111111100000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -634,6 +671,8 @@ void Instruction::executeSrli(Hardware *harw)
 
 void Instruction::executeSrai(Hardware *harw)
 {
+	if (getBits<4, 4>(imm_) == 0b1)
+		imm_ += 0b11111111111111111111111111100000;
 	if (needDebug_)
 	{
 		printInsnType(insnType_);
@@ -641,7 +680,7 @@ void Instruction::executeSrai(Hardware *harw)
 		P_REG_VAL(rd_)
 		P_NUM(imm_)
 	}
-	auto shift = getBits<4, 0> (imm_);
+	//auto shift = getBits<4, 0> (imm_);
 	
 	if (getBits<31, 31>(harw->getReg(rs1_)) == 0b0)
 		harw->setReg(rd_, harw->getReg(rs1_) >> imm_);
