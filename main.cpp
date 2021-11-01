@@ -46,10 +46,6 @@ int main(int argc, char *argv[])
     physMem.write(16, sll);
     physMem.write(20, testROMA);
 
-    //P_BIT_NUM(8599, 32);
-
-    //physMem.write(16, 8599);
-
     Hardware hardWare{&physMem, true};
     hardWare.setReg(kX1, 3);
     hardWare.setReg(kX2, 10000);
@@ -63,6 +59,8 @@ int main(int argc, char *argv[])
 
     std::cout << "kX3 = " << hardWare.getReg(kX3) << std::endl;
     std::cout << "kX2 = " << hardWare.getReg(kX2) << std::endl;
+
+    /* TODO: register dump */
 
 
     exit(EXIT_SUCCESS);
