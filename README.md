@@ -14,16 +14,21 @@ At this moment there is no parsing of __elf-file__ and the executed instructions
 
 __Add, Sub, Sll, Slt, Sltu, Xor, Srl, Sra, Or, And, Beq, Bne, Blt, Bge, Bltu, Bgeu, Lb, Lh, Lw, Lbu, Lhu, Ecall, Ebreak, Sb, Sh, Sw, Addi, Slti, Sltiu, Xori, Ori, Andi, Slli, Srli, Srai, Jal, Jalr, Auipc, Lui__.
 
+- [ ] Remains insns:
+__SLTI, SLTIU, SLT, SLTU, FENCE__
+
 ## TODO
 
 - [ ] Parsing of __elf-file__.
 
 - [ ] Correct support of processing the __x0__ register.
 
+- [ ] Register dump for debug information.
+
 ## EXTRA
 
-- [ ] Assembler
+- [ ] Assembler.
 
-- [ ] Disassebler
+- [ ] Disassebler.
 
 
