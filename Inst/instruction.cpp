@@ -19,6 +19,8 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 	switch (insn & 0x7F) /* 1st seven bits*/
 	{
 		// R-format insns
+		case 0:
+			break;
 		case 0b0010111:
 		{
 		    rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
@@ -116,11 +118,12 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
         }
         case 0b1100011: /* BEQ BNE BLT BGE BLTU BGEU */
 		{
+
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
 			
 			imm_ = (getBits<11, 8>(insn) << 1) + (getBits<7, 7>(insn) << 11) + 
-					(getBits<30, 25>(insn) << 5) + (getBits<0, 0>(static_cast<SRegValue>(insn)) >> 31);		
+					(getBits<30, 25>(insn) << 5) + (getBits<0, 0>( static_cast<SRegValue>(insn) >> 31 ) << 12);		
 
 			auto funct3 = getBits<14, 12>(insn);
 
@@ -240,7 +243,7 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			rs1_ = static_cast<RegId> (getBits<19, 15>(insn));
 			rs2_ = static_cast<RegId> (getBits<24, 20>(insn));
 			
-			imm_ = getBits<11, 7>(insn) + getBits<6, 0>(static_cast<SRegValue>(insn) >> 25) << 5;
+			imm_ = getBits<11, 7>(insn) + (getBits<6, 0>(static_cast<SRegValue>(insn) >> 25) << 5);
 
 			auto funct3 = getBits<14, 12>(insn);
 
@@ -312,15 +315,15 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			}
 			else /* logical/arithmetic shifts */
 			{
-				auto funct7 = getBits<5, 11>(imm_);
-				imm_ = getBits<0, 4>(imm_);
+				auto funct7 = getBits<11, 5>(imm_);
+				imm_ = getBits<4, 0>(imm_);
 
 				if (funct7 == 0 && funct3 == 0b001)
 				{
 					insnType_ = kInsnSlli;
 					executor_ = &Instruction::executeSlli;
 				}
-				else if (funct7 == 0 && funct3 == 0b101)
+				else if (funct7 == 0b000000 && funct3 == 0b101)
 				{
 					insnType_ = kInsnSrli;
 					executor_ = &Instruction::executeSrli;
@@ -363,8 +366,8 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 			
 			uint32_t retImm = getBits<19, 0>(static_cast<SRegValue>(insn) >> 12);//getBits<31, 12>(insn);
 
-			imm_ = (getBits<19, 19>(retImm) << 20) + (getBits<18, 8>(retImm) << 1) 
-				 + (getBits<7 ,  7>(retImm) << 11) + (getBits<7 , 0>(retImm) << 12);
+			imm_ = (getBits<19, 19>(retImm) << 20) + (getBits<18, 9>(retImm) << 1) 
+				 + (getBits<8 ,  8>(retImm) << 11) + (getBits<7 , 0>(retImm) << 12);
 
 			printInfo[PI_rd] = true;
 			printInfo[PI_imm] = true;
@@ -642,14 +645,14 @@ bool Instruction::executeSrai(Hardware *harw)
 bool Instruction::executeJal(Hardware *harw)
 {
 	harw->setReg(rd_, harw->pc() + 4);
-	harw->branch((imm_ << 1) + harw->pc());
+	harw->branch(imm_ + harw->pc());
 	return true;
 }
 
 bool Instruction::executeJalr(Hardware *harw)
 {
 	harw->setReg(rd_, harw->pc() + 4);
-	harw->branch( ( imm_ + getBits<regBitLength - 1, 1>(harw->getReg(rs1_)) ) << 1 );
+	harw->branch( (imm_ + harw->getReg(rs1_)) & (0xFFFFFFFE));
 	return true;
 }
 
