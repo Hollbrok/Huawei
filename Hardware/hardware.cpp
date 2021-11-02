@@ -38,13 +38,15 @@ bool Hardware::execute()
 				return false;
 		}
 		pc_ = nextPc_; 
-		setReg(kX0, 0);
+		setReg(kRegIdZero, 0);
 		
 		if (needDebug_)
 			std::cout << std::endl;
     }
 
-	std::cout << "///////////////////////////////////////////////\n" << std::endl;
+	std::cout << "\n///////////////////////////////////////////////\n" << std::endl;
+
+	regDump();
 
     return true;
 }

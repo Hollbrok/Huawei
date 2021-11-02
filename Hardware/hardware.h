@@ -41,6 +41,16 @@ public:
 	bool read(PhysAddr addr, RegValue* value, size_t size = kInsnSize) {return physMem_->read(addr, value, size);}
 
 	void Ebreak() { assert(0 && "EBREAK"); };
+
+	void regDump() 
+	{ 
+		std::cout << "///////////////////////////////////////////////\n" << std::endl;
+
+		for (size_t i = 0; i < kRegFileGprSize; ++i)
+			std::cout << "x" << i << " = " << regs_[i] << std::endl;		
+
+		std::cout << "///////////////////////////////////////////////\n" << std::endl;	
+	}
 };
 
 
