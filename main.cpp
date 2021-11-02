@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
 
     std::cout << "result of execute() = " << result << std::endl; 
 
-    std::cout << "kX3 = " << hardWare.getReg(kX3) << std::endl;
-    std::cout << "kX2 = " << hardWare.getReg(kX2) << std::endl;
+    //std::cout << "kX3 = " << hardWare.getReg(kX3) << std::endl;
+    //std::cout << "kX2 = " << hardWare.getReg(kX2) << std::endl;
 
     /* TODO: register dump */
 

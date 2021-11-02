@@ -3,6 +3,7 @@
 
 constexpr size_t kPhysMemSize = 4096;
 constexpr size_t kInsnSize = 4;
+constexpr size_t regBitLength = 32;
 
 typedef uint32_t PhysAddr;
 typedef uint32_t VirtAddr;
