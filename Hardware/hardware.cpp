@@ -38,6 +38,7 @@ bool Hardware::execute()
 				return false;
 		}
 		pc_ = nextPc_; 
+		setReg(kX0, 0);
 		
 		if (needDebug_)
 			std::cout << std::endl;
