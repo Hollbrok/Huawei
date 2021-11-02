@@ -11,14 +11,19 @@ Hardware::Hardware(PhysMem *physMem, bool needDebug) :
 
 bool Hardware::execute()
 {
+
+	setReg(kRegStackP, 8192 * 16 - 21);
+	pc_ = 65620;
     while(true)
     {
 		EncodedInsn insnCode{};
 
         if (physMem_->read(pc_, &insnCode)) // 3rd arg = kInsnSize
 		{    // TODO: exception
+			std::cout << "NO MORE INSNS!!!!!!" << std::endl;
 			std::cout << "/////////////////////////////////////////////// \n" << std::endl;
-		     return false;
+		    regDump();
+			return false;
 		}
 
 		if (insnCode == 0) /* no more commands */
@@ -35,6 +40,7 @@ bool Hardware::execute()
 		if (!insn.executor(this))
 		{
 				std::cout << "/////////////////////////////////////////////// \n" << std::endl;
+				std::cout << "CRASH EXECUTOR!!!!!!" << std::endl;
 				return false;
 		}
 		pc_ = nextPc_; 
