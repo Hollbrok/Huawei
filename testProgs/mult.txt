@@ -1,0 +1,1076 @@
+/////////////////////////////////////////////// 
+
+		 insn PC = 65620
+
+		 Before execute [ADDI] : 
+rd(x2) = 131051
+rs1(x2) = 131051
+imm_ = -32
+		 After execute: 
+rd(x2) = 131019
+rs1(x2) = 131019
+imm_ = -32
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65624
+
+		 Before execute [SW] : 
+rs1(x2) = 131019
+rs2(x1) = 0
+imm_ = 28
+		 After execute: 
+rs1(x2) = 131019
+rs2(x1) = 0
+imm_ = 28
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65628
+
+		 Before execute [SW] : 
+rs1(x2) = 131019
+rs2(x8) = 0
+imm_ = 24
+		 After execute: 
+rs1(x2) = 131019
+rs2(x8) = 0
+imm_ = 24
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65632
+
+		 Before execute [ADDI] : 
+rd(x8) = 0
+rs1(x2) = 131019
+imm_ = 32
+		 After execute: 
+rd(x8) = 131051
+rs1(x2) = 131019
+imm_ = 32
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65636
+
+		 Before execute [ADDI] : 
+rd(x15) = 0
+rs1(x0) = 0
+imm_ = 19
+		 After execute: 
+rd(x15) = 19
+rs1(x0) = 0
+imm_ = 19
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65640
+
+		 Before execute [SW] : 
+rs1(x8) = 131051
+rs2(x15) = 19
+imm_ = -20
+		 After execute: 
+rs1(x8) = 131051
+rs2(x15) = 19
+imm_ = -20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65644
+
+		 Before execute [ADDI] : 
+rd(x15) = 19
+rs1(x0) = 0
+imm_ = 8
+		 After execute: 
+rd(x15) = 8
+rs1(x0) = 0
+imm_ = 8
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65648
+
+		 Before execute [SW] : 
+rs1(x8) = 131051
+rs2(x15) = 8
+imm_ = -24
+		 After execute: 
+rs1(x8) = 131051
+rs2(x15) = 8
+imm_ = -24
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65652
+
+		 Before execute [LW] : 
+rd(x11) = 0
+rs1(x8) = 131051
+imm_ = -24
+		 After execute: 
+rd(x11) = 8
+rs1(x8) = 131051
+imm_ = -24
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65656
+
+		 Before execute [LW] : 
+rd(x10) = 0
+rs1(x8) = 131051
+imm_ = -20
+		 After execute: 
+rd(x10) = 19
+rs1(x8) = 131051
+imm_ = -20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65660
+
+		 Before execute [JAL] : 
+rd(x1) = 0
+imm_ = 32
+		 After execute: 
+rd(x1) = 65664
+imm_ = 32
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65692
+
+		 Before execute [ADDI] : 
+rd(x2) = 131019
+rs1(x2) = 131019
+imm_ = -48
+		 After execute: 
+rd(x2) = 130971
+rs1(x2) = 130971
+imm_ = -48
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65696
+
+		 Before execute [SW] : 
+rs1(x2) = 130971
+rs2(x8) = 131051
+imm_ = 44
+		 After execute: 
+rs1(x2) = 130971
+rs2(x8) = 131051
+imm_ = 44
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65700
+
+		 Before execute [ADDI] : 
+rd(x8) = 131051
+rs1(x2) = 130971
+imm_ = 48
+		 After execute: 
+rd(x8) = 131019
+rs1(x2) = 130971
+imm_ = 48
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65704
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x10) = 19
+imm_ = -36
+		 After execute: 
+rs1(x8) = 131019
+rs2(x10) = 19
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65708
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x11) = 8
+imm_ = -40
+		 After execute: 
+rs1(x8) = 131019
+rs2(x11) = 8
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65712
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x0) = 0
+imm_ = -20
+		 After execute: 
+rs1(x8) = 131019
+rs2(x0) = 0
+imm_ = -20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65716
+
+		 Before execute [JAL] : 
+rd(x0) = 0
+imm_ = 56
+		 After execute: 
+rd(x0) = 65720
+imm_ = 56
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65772
+
+		 Before execute [LW] : 
+rd(x15) = 8
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 8
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65776
+
+		 Before execute [BNE] : 
+rs1(x15) = 8
+rs2(x0) = 0
+imm_ = -56
+		 After execute: 
+rs1(x15) = 8
+rs2(x0) = 0
+imm_ = -56
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65720
+
+		 Before execute [LW] : 
+rd(x15) = 8
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 8
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65724
+
+		 Before execute [ANDI] : 
+rd(x15) = 8
+rs1(x15) = 8
+imm_ = 1
+		 After execute: 
+rd(x15) = 0
+rs1(x15) = 0
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65728
+
+		 Before execute [BEQ] : 
+rs1(x15) = 0
+rs2(x0) = 0
+imm_ = 20
+		 After execute: 
+rs1(x15) = 0
+rs2(x0) = 0
+imm_ = 20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65748
+
+		 Before execute [LW] : 
+rd(x15) = 0
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 8
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65752
+
+		 Before execute [SRAI] : 
+rd(x15) = 8
+rs1(x15) = 8
+imm_ = 1
+		 After execute: 
+rd(x15) = 4
+rs1(x15) = 4
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65756
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x15) = 4
+imm_ = -40
+		 After execute: 
+rs1(x8) = 131019
+rs2(x15) = 4
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65760
+
+		 Before execute [LW] : 
+rd(x15) = 4
+rs1(x8) = 131019
+imm_ = -36
+		 After execute: 
+rd(x15) = 19
+rs1(x8) = 131019
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65764
+
+		 Before execute [SLLI] : 
+rd(x15) = 19
+rs1(x15) = 19
+imm_ = 1
+		 After execute: 
+rd(x15) = 38
+rs1(x15) = 38
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65768
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x15) = 38
+imm_ = -36
+		 After execute: 
+rs1(x8) = 131019
+rs2(x15) = 38
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65772
+
+		 Before execute [LW] : 
+rd(x15) = 38
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 4
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65776
+
+		 Before execute [BNE] : 
+rs1(x15) = 4
+rs2(x0) = 0
+imm_ = -56
+		 After execute: 
+rs1(x15) = 4
+rs2(x0) = 0
+imm_ = -56
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65720
+
+		 Before execute [LW] : 
+rd(x15) = 4
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 4
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65724
+
+		 Before execute [ANDI] : 
+rd(x15) = 4
+rs1(x15) = 4
+imm_ = 1
+		 After execute: 
+rd(x15) = 0
+rs1(x15) = 0
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65728
+
+		 Before execute [BEQ] : 
+rs1(x15) = 0
+rs2(x0) = 0
+imm_ = 20
+		 After execute: 
+rs1(x15) = 0
+rs2(x0) = 0
+imm_ = 20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65748
+
+		 Before execute [LW] : 
+rd(x15) = 0
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 4
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65752
+
+		 Before execute [SRAI] : 
+rd(x15) = 4
+rs1(x15) = 4
+imm_ = 1
+		 After execute: 
+rd(x15) = 2
+rs1(x15) = 2
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65756
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x15) = 2
+imm_ = -40
+		 After execute: 
+rs1(x8) = 131019
+rs2(x15) = 2
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65760
+
+		 Before execute [LW] : 
+rd(x15) = 2
+rs1(x8) = 131019
+imm_ = -36
+		 After execute: 
+rd(x15) = 38
+rs1(x8) = 131019
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65764
+
+		 Before execute [SLLI] : 
+rd(x15) = 38
+rs1(x15) = 38
+imm_ = 1
+		 After execute: 
+rd(x15) = 76
+rs1(x15) = 76
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65768
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x15) = 76
+imm_ = -36
+		 After execute: 
+rs1(x8) = 131019
+rs2(x15) = 76
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65772
+
+		 Before execute [LW] : 
+rd(x15) = 76
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 2
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65776
+
+		 Before execute [BNE] : 
+rs1(x15) = 2
+rs2(x0) = 0
+imm_ = -56
+		 After execute: 
+rs1(x15) = 2
+rs2(x0) = 0
+imm_ = -56
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65720
+
+		 Before execute [LW] : 
+rd(x15) = 2
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 2
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65724
+
+		 Before execute [ANDI] : 
+rd(x15) = 2
+rs1(x15) = 2
+imm_ = 1
+		 After execute: 
+rd(x15) = 0
+rs1(x15) = 0
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65728
+
+		 Before execute [BEQ] : 
+rs1(x15) = 0
+rs2(x0) = 0
+imm_ = 20
+		 After execute: 
+rs1(x15) = 0
+rs2(x0) = 0
+imm_ = 20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65748
+
+		 Before execute [LW] : 
+rd(x15) = 0
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 2
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65752
+
+		 Before execute [SRAI] : 
+rd(x15) = 2
+rs1(x15) = 2
+imm_ = 1
+		 After execute: 
+rd(x15) = 1
+rs1(x15) = 1
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65756
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x15) = 1
+imm_ = -40
+		 After execute: 
+rs1(x8) = 131019
+rs2(x15) = 1
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65760
+
+		 Before execute [LW] : 
+rd(x15) = 1
+rs1(x8) = 131019
+imm_ = -36
+		 After execute: 
+rd(x15) = 76
+rs1(x8) = 131019
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65764
+
+		 Before execute [SLLI] : 
+rd(x15) = 76
+rs1(x15) = 76
+imm_ = 1
+		 After execute: 
+rd(x15) = 152
+rs1(x15) = 152
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65768
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x15) = 152
+imm_ = -36
+		 After execute: 
+rs1(x8) = 131019
+rs2(x15) = 152
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65772
+
+		 Before execute [LW] : 
+rd(x15) = 152
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 1
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65776
+
+		 Before execute [BNE] : 
+rs1(x15) = 1
+rs2(x0) = 0
+imm_ = -56
+		 After execute: 
+rs1(x15) = 1
+rs2(x0) = 0
+imm_ = -56
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65720
+
+		 Before execute [LW] : 
+rd(x15) = 1
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 1
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65724
+
+		 Before execute [ANDI] : 
+rd(x15) = 1
+rs1(x15) = 1
+imm_ = 1
+		 After execute: 
+rd(x15) = 1
+rs1(x15) = 1
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65728
+
+		 Before execute [BEQ] : 
+rs1(x15) = 1
+rs2(x0) = 0
+imm_ = 20
+		 After execute: 
+rs1(x15) = 1
+rs2(x0) = 0
+imm_ = 20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65732
+
+		 Before execute [LW] : 
+rd(x14) = 0
+rs1(x8) = 131019
+imm_ = -20
+		 After execute: 
+rd(x14) = 0
+rs1(x8) = 131019
+imm_ = -20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65736
+
+		 Before execute [LW] : 
+rd(x15) = 1
+rs1(x8) = 131019
+imm_ = -36
+		 After execute: 
+rd(x15) = 152
+rs1(x8) = 131019
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65740
+
+		 Before execute [ADD] : 
+rd(x15) = 152
+rs1(x14) = 0
+rs2(x15) = 152
+		 After execute: 
+rd(x15) = 152
+rs1(x14) = 0
+rs2(x15) = 152
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65744
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x15) = 152
+imm_ = -20
+		 After execute: 
+rs1(x8) = 131019
+rs2(x15) = 152
+imm_ = -20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65748
+
+		 Before execute [LW] : 
+rd(x15) = 152
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 1
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65752
+
+		 Before execute [SRAI] : 
+rd(x15) = 1
+rs1(x15) = 1
+imm_ = 1
+		 After execute: 
+rd(x15) = 0
+rs1(x15) = 0
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65756
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x15) = 0
+imm_ = -40
+		 After execute: 
+rs1(x8) = 131019
+rs2(x15) = 0
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65760
+
+		 Before execute [LW] : 
+rd(x15) = 0
+rs1(x8) = 131019
+imm_ = -36
+		 After execute: 
+rd(x15) = 152
+rs1(x8) = 131019
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65764
+
+		 Before execute [SLLI] : 
+rd(x15) = 152
+rs1(x15) = 152
+imm_ = 1
+		 After execute: 
+rd(x15) = 304
+rs1(x15) = 304
+imm_ = 1
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65768
+
+		 Before execute [SW] : 
+rs1(x8) = 131019
+rs2(x15) = 304
+imm_ = -36
+		 After execute: 
+rs1(x8) = 131019
+rs2(x15) = 304
+imm_ = -36
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65772
+
+		 Before execute [LW] : 
+rd(x15) = 304
+rs1(x8) = 131019
+imm_ = -40
+		 After execute: 
+rd(x15) = 0
+rs1(x8) = 131019
+imm_ = -40
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65776
+
+		 Before execute [BNE] : 
+rs1(x15) = 0
+rs2(x0) = 0
+imm_ = -56
+		 After execute: 
+rs1(x15) = 0
+rs2(x0) = 0
+imm_ = -56
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65780
+
+		 Before execute [LW] : 
+rd(x15) = 0
+rs1(x8) = 131019
+imm_ = -20
+		 After execute: 
+rd(x15) = 152
+rs1(x8) = 131019
+imm_ = -20
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65784
+
+		 Before execute [ADDI] : 
+rd(x10) = 19
+rs1(x15) = 152
+imm_ = 0
+		 After execute: 
+rd(x10) = 152
+rs1(x15) = 152
+imm_ = 0
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65788
+
+		 Before execute [LW] : 
+rd(x8) = 131019
+rs1(x2) = 130971
+imm_ = 44
+		 After execute: 
+rd(x8) = 131051
+rs1(x2) = 130971
+imm_ = 44
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65792
+
+		 Before execute [ADDI] : 
+rd(x2) = 130971
+rs1(x2) = 130971
+imm_ = 48
+		 After execute: 
+rd(x2) = 131019
+rs1(x2) = 131019
+imm_ = 48
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65796
+
+		 Before execute [JALR] : 
+rd(x0) = 0
+rs1(x1) = 65664
+imm_ = 0
+		 After execute: 
+rd(x0) = 65800
+rs1(x1) = 65664
+imm_ = 0
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65664
+
+		 Before execute [SW] : 
+rs1(x8) = 131051
+rs2(x10) = 152
+imm_ = -28
+		 After execute: 
+rs1(x8) = 131051
+rs2(x10) = 152
+imm_ = -28
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65668
+
+		 Before execute [ADDI] : 
+rd(x15) = 152
+rs1(x0) = 0
+imm_ = 0
+		 After execute: 
+rd(x15) = 0
+rs1(x0) = 0
+imm_ = 0
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65672
+
+		 Before execute [ADDI] : 
+rd(x10) = 152
+rs1(x15) = 0
+imm_ = 0
+		 After execute: 
+rd(x10) = 0
+rs1(x15) = 0
+imm_ = 0
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65676
+
+		 Before execute [LW] : 
+rd(x1) = 65664
+rs1(x2) = 131019
+imm_ = 28
+		 After execute: 
+rd(x1) = 0
+rs1(x2) = 131019
+imm_ = 28
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65680
+
+		 Before execute [LW] : 
+rd(x8) = 131051
+rs1(x2) = 131019
+imm_ = 24
+		 After execute: 
+rd(x8) = 0
+rs1(x2) = 131019
+imm_ = 24
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65684
+
+		 Before execute [ADDI] : 
+rd(x2) = 131019
+rs1(x2) = 131019
+imm_ = 32
+		 After execute: 
+rd(x2) = 131051
+rs1(x2) = 131051
+imm_ = 32
+
+/////////////////////////////////////////////// 
+
+		 insn PC = 65688
+
+		 Before execute [JALR] : 
+rd(x0) = 0
+rs1(x1) = 0
+imm_ = 0
+		 After execute: 
+rd(x0) = 65692
+rs1(x1) = 0
+imm_ = 0
+
+
+///////////////////////////////////////////////
+
+///////////////////////////////////////////////
+
+x0 = 0
+x1 = 0
+x2 = 131051
+x3 = 0
+x4 = 0
+x5 = 0
+x6 = 0
+x7 = 0
+x8 = 0
+x9 = 0
+x10 = 0
+x11 = 8
+x12 = 0
+x13 = 0
+x14 = 0
+x15 = 0
+x16 = 0
+x17 = 0
+x18 = 0
+x19 = 0
+x20 = 0
+x21 = 0
+x22 = 0
+x23 = 0
+x24 = 0
+x25 = 0
+x26 = 0
+x27 = 0
+x28 = 0
+x29 = 0
+x30 = 0
+x31 = 0
+///////////////////////////////////////////////
+
+result of execute() = 1
