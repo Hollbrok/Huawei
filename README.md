@@ -23,7 +23,7 @@ __SLTI, SLTIU, SLT, SLTU, FENCE__
 
 - [X] Correct support of processing the __x0__ register.
 
-- [ ] Register dump for debug information.
+- [X] Register dump for debug information.
 
 ## EXTRA
 
