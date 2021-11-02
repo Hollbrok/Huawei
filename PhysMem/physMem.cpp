@@ -23,8 +23,8 @@ bool PhysMem::read(PhysAddr addr, RegValue* value, size_t size)
 {
     if (addr + size > kPhysMemSize)
     {
-        DEBPRINT("address + size of value > kPhysMemSize\n"
-                 "%zu + %zu  > %zu ", addr, size, kPhysMemSize)
+        fprintf(stderr, "READ: address + size of value > kPhysMemSize\n"
+                 "%zu + %zu  > %zu ", addr, size, kPhysMemSize);
         return 1;
     }
 
