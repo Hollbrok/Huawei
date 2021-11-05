@@ -1,4 +1,4 @@
 # How to build
 
 ```console
-    make file=__file-name__```
+    make file=__file-name__
