@@ -79,8 +79,5 @@ void elfPars(char *fileName)
     ( void ) elf_end ( e );
     ( void ) close ( fd );
 
-    exit ( EX_OK );
-
-
-
+    return;
 }
