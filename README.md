@@ -19,11 +19,13 @@ __SLTI, SLTIU, SLT, SLTU, FENCE__
 
 ## TODO
 
-- [ ] Parsing of __elf-file__.
+- [X] Parsing of __elf-file__.
 
 - [X] Correct support of processing the __x0__ register.
 
 - [X] Register dump for debug information.
+
+- [X] Add some examples
 
 ## EXTRA
 
