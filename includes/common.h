@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-constexpr size_t kPhysMemSize = 4096;
+constexpr size_t kPhysMemSize = 8192 * 32;
 constexpr size_t kInsnSize = 4;
 constexpr size_t regBitLength = 32;
 
@@ -48,6 +48,7 @@ enum RegId
     kX30,
 	kX31,
 	kRegIdZero = kX0,
+    kRegStackP = kX2,
     kRegFileGprSize = 32,
     kErrVal = -1,
 };
