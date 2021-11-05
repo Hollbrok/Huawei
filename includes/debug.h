@@ -61,7 +61,7 @@
 
 #define P_BIT_NUM(num, bits)                        \
     do{std::bitset<bits> num_b(num);                \
-    std::cout << #num << "_b = " << num_b << std::endl;}while(0)
+    std::cout << std::setw(10) << #num << "_b = " << std::right << std::setw(32) << num_b << std::endl;}while(0)
 
 
 #endif

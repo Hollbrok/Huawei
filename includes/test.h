@@ -199,11 +199,63 @@
         0xf3dff06f,                 \
     };
 
+#define FACT_INSNS          \
+    EncodedInsn fact[]  = { \
+        0xfe010113,         \
+        0x00112e23,         \
+        0x00812c23,         \
+        0x02010413,         \
+        0x00a00793,         \
+        0xfef42623,         \
+        0xfec42503,         \
+        0x020000ef,         \
+        0xfea42423,         \
+        0x00000793,         \
+        0x00078513,         \
+        0x01c12083,         \
+        0x01812403,         \
+        0x02010113,         \
+        0x00008067,         \
+        0xfe010113,         \
+        0x00112e23,         \
+        0x00812c23,         \
+        0x02010413,         \
+        0xfea42623,         \
+        0xfec42703,         \
+        0x00200793,         \
+        0x00f71663,         \
+        0x00200793,         \
+        0x0280006f,         \
+        0xfec42783,         \
+        0xfff78793,         \
+        0x00078513,         \
+        0xfcdff0ef,/*fcdff0ef*/  \
+        0x00050793,         \
+        0xfec42583,         \
+        0x00078513,         \
+        0x01c000ef,         \
+        0x00050793,         \
+        0x00078513,         \
+        0x01c12083,         \
+        0x01812403,         \
+        0x02010113,         \
+        0x00008067,         \
+        0x00050613,         \ 
+        0x00000513,         \
+        0x0015f693,         \
+        0x00068463,         \
+        0x00c50533,         \
+        0x0015d593,         \
+        0x00161613,         \
+        0xfe0596e3,         \
+        0x00008067,         \
+    };
+
 /////////////////////////////////////////////////
 
 #define MULT_EXAMPLE                                                \
     MULT_INSNS                                                      \
-    RegValue startPc = 65620;                                   \
+    RegValue startPc = 65620;                                       \
     for (int i = 0; i < sizeof(mult) / sizeof(EncodedInsn); i++)    \
         physMem.write(65620 + i * 4, mult[i], 4);
 
@@ -213,7 +265,10 @@
     for (int i = 0; i < sizeof(sum) / sizeof(EncodedInsn); i++)     \
         physMem.write(startPc + i * 4, sum[i], 4);                  
     
-    //for (int i = 0; i < sizeof(Imemset) / sizeof(EncodedInsn); i++) 
-    //    physMem.write(66244 + i * 4, Imemset[i], 4); 
-            
+#define FACT_EXAMPLE                                                \
+    FACT_INSNS                                                      \
+    RegValue startPc = 0x1013c;                                     \
+    for (int i = 0; i < sizeof(fact) / sizeof(EncodedInsn); i++)    \
+        physMem.write(startPc + i * 4, fact[i], 4);  
+
 #endif
