@@ -63,7 +63,10 @@ const char kInsnTypeNames[][20] =
 	"SB", "SH", "SW",
 	"ADDI", "SLTI", "SLTIU", "XORI", "ORI", "ANDI", "SLLI", "SRLI", "SRAI",
 	"JAL",
-	"JALR"
+	"JALR",
+	"AUIPC",
+	"LUI",
+	"ERROR"
 };
 
 

@@ -364,10 +364,15 @@ Instruction::Instruction(EncodedInsn insn, RegValue pc)
 		{
 			rd_  = static_cast<RegId> (getBits<11, 7 >(insn));
 			
-			uint32_t retImm = getBits<19, 0>(static_cast<SRegValue>(insn) >> 12);//getBits<31, 12>(insn);
+			SRegValue shiftImm = static_cast<SRegValue>(insn) >> 12;
 
-			imm_ = (getBits<19, 19>(retImm) << 20) + (getBits<18, 9>(retImm) << 1) 
-				 + (getBits<8 ,  8>(retImm) << 11) + (getBits<7 , 0>(retImm) << 12);
+			RegValue retImm = static_cast<RegValue>(shiftImm);
+
+			imm_ = (getBits<19, 19>(static_cast<RegValue>(retImm)) << 20) + (getBits<18, 9>(retImm) << 1)
+				 + (getBits<8 ,  8>(retImm) << 11) + (getBits<7 , 0>(retImm) << 12)+ (getBits<31, 20>(retImm) << 21);
+
+			P_BIT_NUM(imm_, 32);
+
 
 			printInfo[PI_rd] = true;
 			printInfo[PI_imm] = true;
