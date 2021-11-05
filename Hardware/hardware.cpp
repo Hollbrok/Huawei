@@ -1,8 +1,8 @@
 #include "hardware.h"
 
-Hardware::Hardware(PhysMem *physMem, bool needDebug) :
+Hardware::Hardware(PhysMem *physMem, RegValue pc, bool needDebug) :
 	regs_    {},
-	pc_      {0},
+	pc_      {pc},
 	nextPc_  {0},
 	physMem_ {physMem},
 	needDebug_{needDebug}
@@ -12,8 +12,7 @@ Hardware::Hardware(PhysMem *physMem, bool needDebug) :
 bool Hardware::execute()
 {
 
-	setReg(kRegStackP, 8192 * 16 - 21);
-	pc_ = 65620;
+	setReg(kRegStackP, 8192 * 24 - 21);
     while(true)
     {
 		EncodedInsn insnCode{};

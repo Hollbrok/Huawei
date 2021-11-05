@@ -9,7 +9,7 @@
 #include "../PhysMem/physMem.h"
 
 class Hardware final
-{
+{ 
 private:
     RegValue regs_[kRegFileGprSize];
 	RegValue pc_;
@@ -19,7 +19,7 @@ private:
 
 public:
 
-	Hardware(PhysMem *physMem, bool needDebug = false);
+	Hardware(PhysMem *physMem, RegValue pc, bool needDebug = false);
 
 // GETTERS
 
