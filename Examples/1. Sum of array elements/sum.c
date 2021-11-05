@@ -1,15 +1,13 @@
-#define arrSize 100
-
 int main()
 {   
-    int array[arrSize] = {};
+    int array[100];
 
-    for (int i = 0; i < arrSize; ++i)
+    for (int i = 0; i < 100; ++i)
         array[i] = i;
     
     int sum = 0;
 
-    for (int i = 0; i < arrSize; ++i)
+    for (int i = 0; i < 100; ++i)
         sum += array[i];
     
 

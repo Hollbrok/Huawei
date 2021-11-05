@@ -9,15 +9,8 @@
 	.type	main, @function
 main:
 	addi	sp,sp,-432
-	sw	ra,428(sp)
-	sw	s0,424(sp)
+	sw	s0,428(sp)
 	addi	s0,sp,432
-	addi	a5,s0,-428
-	li	a4,400
-	mv	a2,a4
-	li	a1,0
-	mv	a0,a5
-	call	memset
 	sw	zero,-20(s0)
 	j	.L2
 .L3:
@@ -55,8 +48,7 @@ main:
 	ble	a4,a5,.L5
 	li	a5,0
 	mv	a0,a5
-	lw	ra,428(sp)
-	lw	s0,424(sp)
+	lw	s0,428(sp)
 	addi	sp,sp,432
 	jr	ra
 	.size	main, .-main
