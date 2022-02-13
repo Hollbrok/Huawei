@@ -2,13 +2,13 @@
 
 Получать при помощи "clang -emt-llvm -S":
 
-- [ ] trunc
-- [ ] getelementptr
-- [ ] vsrem
+- [x] trunc
+- [x] getelementptr
+- [x] srem
 - [ ] lshr
 - [ ] zext
-- [ ] bitcast
-- [ ] sitofp
+- [x] bitcast
+- [x] sitofp
 - [ ] tail call
 - [ ] select
 - [ ] fpext
