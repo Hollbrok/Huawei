@@ -30,8 +30,9 @@ int main(int argc, char *argv[])
     PhysMem physMem{};
 
     //MULT_EXAMPLE
-    SUM_EXAMPLE
+    //SUM_EXAMPLE
 
+    FACT_EXAMPLE
 
     Hardware hardWare{&physMem, startPc, true};
 
