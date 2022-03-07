@@ -457,5 +457,9 @@ const char* Stack::error_print(int bit_of_error)
 
 auto get_byte(int digit, int number_of_bit) -> bool
 {
-    return (bool((1 << (number_of_bit - 1))  &  digit));
+    fprintf(stderr, "before ");
+    bool retVal =  (bool((1 << (number_of_bit - 1))  &  digit));
+    fprintf(stderr, "after (ret = %d)\n", retVal);
+    return retVal;
+
 }
