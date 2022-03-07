@@ -409,7 +409,7 @@ Bytecode::Bytecode(Code *code_class, bool need_debug) :
 
 	determine_status();
 
-	FILE *assembler_txt = fopen("xxx.hol", "w");
+	FILE *assembler_txt = fopen("xxx", "w");
 	assert(assembler_txt && "Can't open file assembler_code.txt");
 
 
