@@ -16,8 +16,10 @@ int main(int argc, char *argv[])
     FILE* text = fopen(argv[1], "r");
     assert(text);
 
-    FILE* result = fopen("disassem_result[for user].txt",   "wb");
+    FILE* result = fopen("disassem_result[for user]",   "wb");
     assert(result);
+
+    //fprintf(result, "\n");
 
     struct Bytecode bytecode = {};
     make_bytecode(text, &bytecode);

@@ -7,29 +7,49 @@ auto make_bytecode(FILE* text, Bytecode* byte_struct) -> void
     fseek(text, 0, SEEK_SET);
     file_length++;
 
+
     char* buffer_char = (char*) calloc(file_length, sizeof(char));
     assert(buffer_char);
 
     fread(buffer_char, sizeof(char), file_length, text);
 
+    //fprintf(result, "\n");
+
     int space_counter = 0;
     for(int index = 0; index < file_length; index++)
         if(buffer_char[index] == ' ')
             space_counter++;
+    
+    //fprintf(result, "\n");
+    fprintf(stderr, "1\n");
 
     byte_struct->bytecode_capacity = space_counter;
 
+    fprintf(stderr, "calloc %d elems (bytes = %d)\n", byte_struct->bytecode_capacity, byte_struct->bytecode_capacity * sizeof(double));
+    fprintf(stderr, "file_length = %d\n", file_length);
+
     byte_struct->data     = (double*) calloc(byte_struct->bytecode_capacity, sizeof(double));
     assert(byte_struct->data);
-    int ass_cur_size = 0;
 
-    while(*buffer_char)
+    //fprintf(result, "\n");
+
+
+    int ass_cur_size = 0;
+    fprintf(stderr, "2\n");
+
+    while (*buffer_char)//&& (curLength != file_length))
     {
         double temp_val = get_number(&buffer_char);
+        
         byte_struct->data[ass_cur_size++] = temp_val;
         ignore_spaces(&buffer_char);
     }
+
+
+    fprintf(stderr, "4\n");
     byte_struct->bytecode_capacity = ass_cur_size;
+    fprintf(stderr, "ass_cur_size = %d\n", ass_cur_size);
+
     return;
 }
 
@@ -52,6 +72,9 @@ auto bytecode_destruct(Bytecode* byte_struct) -> void //перед free нужн
 auto disassembler(Bytecode* byte_struct, FILE* result) -> void
 {
     assert(byte_struct);
+    assert(result);
+
+    fprintf(stderr, "result = %p\n", result);
 
     int skip_first  = -1;
     int skip_second = -1;
@@ -68,16 +91,26 @@ auto disassembler(Bytecode* byte_struct, FILE* result) -> void
     {
         fprintf(stderr, "i = %d\n", i);
 
-        int command = static_cast<int>(byte_struct->data[i]);
 
-        if (get_byte(command, BIT_PUSH) || get_byte(command, BIT_POP))	// (command == CMD_PUSH) // PUSH
+        int command = static_cast<int>(byte_struct->data[i]);
+        
+        fprintf(stderr, "TEST1\n");
+
+
+        if (get_byte(command, static_cast<int>(BIT_PUSH)) || get_byte(command, static_cast<int>(BIT_POP)))	// (command == CMD_PUSH) // PUSH
         {
+            fprintf(stderr, "TEST2 \n");
+
             char bracketType[3] = "  ";
+
+            fprintf(stderr, "5\n");
 
             if (get_byte(command, BIT_D_OP))
                 strcpy(bracketType, "[]");//bracketType = "[]";
             else if (get_byte(command, BIT_C_OP))
                 strcpy(bracketType, "()");//bracketType = "()";
+
+            fprintf(stderr, "6\n");
 
             char pushOrPop[10] = "ERROR";
 
@@ -85,6 +118,8 @@ auto disassembler(Bytecode* byte_struct, FILE* result) -> void
                 strcpy(pushOrPop, "push");
             else
                 strcpy(pushOrPop, "pop");
+
+            fprintf(stderr, "7\n");
 
 		    if (get_byte(command, BIT_NUMBER))
                 fprintf(result, "%s %c%lg%c\n",
@@ -112,12 +147,14 @@ auto disassembler(Bytecode* byte_struct, FILE* result) -> void
                 rixChar,
                 bracketType[1] != ' ' ? bracketType[1] : ' ');
             }
-		    
+		    fprintf(stderr, "5\n");
             i++;
         }
         else
         {
-            switch(static_cast<int>(byte_struct->data[i]))
+            fprintf(stderr, "byte_struct->data[%d] = %d\n", i, command);
+            
+            switch(static_cast<int>(command))
             {
                 case static_cast<int>(Commands::CMD_HLT):/*hlt*/
                 {
@@ -174,7 +211,10 @@ auto disassembler(Bytecode* byte_struct, FILE* result) -> void
                 }
                 case static_cast<int>(Commands::CMD_IN):/*in*/
                 {
+                    fprintf(stderr, "before IN\n");
                     fprintf(result, "in\n");
+                    fprintf(stderr, "after IN is printfed\n");
+                    
                     break;
                 }
                 case static_cast<int>(Commands::CMD_OUT):/*out*/
@@ -276,6 +316,7 @@ auto disassembler(Bytecode* byte_struct, FILE* result) -> void
                     fclose(error);
                 }
             }
+            fprintf(stderr, "after else\n");
         }
     }
 
@@ -285,12 +326,20 @@ auto disassembler(Bytecode* byte_struct, FILE* result) -> void
 auto get_number(char** buffer) -> double
 {
     ignore_spaces(buffer);
+    
     double number = atof(*buffer);
+
+    if (**buffer == '-')
+    {
+        number *= -1;
+        (*buffer)++;
+    }
 
     while (isdigit(**buffer) || (**buffer == ','))
         (*buffer)++;
 
-    ignore_spaces(buffer);
+
+    //ignore_spaces(buffer);
     return number;
 }
 
@@ -302,7 +351,10 @@ auto set_time(struct tm *time) -> char*
 
     strftime(string_time, size_time, "%d.%m.%Y %H:%M:%S, %A", time);
 
+    fprintf(stderr, "malloc string_time = %d\n", string_time);
     tmp = (char*) malloc(sizeof(string_time));
+    assert(tmp);
+
     strcpy(tmp, string_time);
 
     return(tmp);

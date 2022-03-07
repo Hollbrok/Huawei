@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include <assert.h>
+#include <errno.h>
 
 #include "disassembler_info.h"
 #include "../Commands.h"
