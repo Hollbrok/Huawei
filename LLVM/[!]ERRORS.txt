@@ -1,0 +1,16 @@
+	Дата error'a : 07.03.2022 23:04:12, Monday (чч/мм/гг)
+
+Disassemblers doesn't know this command..
+bytecode[12] = [16]	Дата error'a : 07.03.2022 23:04:12, Monday (чч/мм/гг)
+
+Disassemblers doesn't know this command..
+bytecode[23] = [39]	Дата error'a : 07.03.2022 23:04:12, Monday (чч/мм/гг)
+
+Disassemblers doesn't know this command..
+bytecode[39] = [16]	Дата error'a : 07.03.2022 23:04:42, Monday (чч/мм/гг)
+
+Disassemblers doesn't know this command..
+bytecode[12] = [290]	Дата error'a : 07.03.2022 23:04:42, Monday (чч/мм/гг)
+
+Disassemblers doesn't know this command..
+bytecode[21] = [37]
