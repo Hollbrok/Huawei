@@ -25,11 +25,11 @@ private:
 
 //!PRIVATE MAIN
 
-	determine_status(Stack* stk);
-	cmd_push_exe(int command, int i, Stack* stk, Rix* rix_struct, char* OP);
-	cmd_pop_exe(int command, int i, Stack *stk, Rix *rix_struct, char *OP);
-	cmd_compair_exe(int command, Stack* stk, int *i);
-	draw_circ(char* OP, Stack* stk);
+void determine_status(Stack* stk);
+void cmd_push_exe(int command, int i, Stack* stk, Rix* rix_struct, char* OP);
+void cmd_pop_exe(int command, int i, Stack *stk, Rix *rix_struct, char *OP);
+void cmd_compair_exe(int command, Stack* stk, int *i);
+void draw_circ(char* OP, Stack* stk);
 
 public:
 
@@ -41,7 +41,7 @@ public:
 
 
 //!PUBLIC MAIN
-	CPU();
+void CPU();
 
 };
 

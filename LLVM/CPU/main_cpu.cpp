@@ -1,11 +1,17 @@
 #include "cpu.h"
 
-int main()
+int main(int argc, char *argv[])
 {
+    if (argc != 2)
+    {
+        fprintf(stderr, "Program needs 1 argument (file-name).\n");
+        exit(EXIT_FAILURE);
+    }
+
     printf("CPU in progress..\n");
 
-    FILE* text = fopen("[!]assembler_code.txt", "rb");
-	assert(text && "Can't open assembler_code.txt");
+    FILE* text = fopen(argv[1], "rb");
+	assert(text && "Can't open asm-file");
 
 	Bytecode byte_class(text);
     byte_class.CPU();

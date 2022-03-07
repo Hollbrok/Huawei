@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 
 #include <string.h>
 
@@ -15,7 +16,7 @@
 #include "cpu_info.h"
 #include "../StackLib/stack.h"
 
-#include "Commands.h"
+#include "../Commands.h"
 
 typedef int ERROR_STATE;
 

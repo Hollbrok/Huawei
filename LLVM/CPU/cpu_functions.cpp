@@ -59,7 +59,7 @@ Bytecode::~Bytecode()
 	find_hlt_ = -1;
 }
 
-Bytecode::CPU()
+void Bytecode::CPU()
 {
     assert(this && "You passed nullptr to CPU()");
 	using namespace my_commands;
@@ -95,7 +95,7 @@ Bytecode::CPU()
             switch(command)
             {
                 case CMD_HLT:
-                    find_hlt_ = TRUE;
+                    find_hlt_ = true;
                     break;
                 case CMD_ADD:
 					stk_size_check(2, not enough numbers in the stack. Exit..\n, stk, get_cur_size())
@@ -105,10 +105,7 @@ Bytecode::CPU()
                 case CMD_MUL:
 					stk_size_check(2, not enough numbers to mul\n, stk, get_cur_size())
                     else
-                    {
-                        printf("in mul\n");
                         stk.push(stk.pop() * stk.pop());
-					}
                     break;
                 case CMD_DIV:
                 {
@@ -170,7 +167,7 @@ Bytecode::CPU()
                         if(!SECOND_PRINT)
                         {
                             FILE* result = fopen("results[for user].txt", "wb");
-                            SECOND_PRINT = TRUE;
+                            SECOND_PRINT = true;
                             fprintf(result, "[%lg]\n", x1);
                             fclose(result);
                         }
@@ -238,24 +235,6 @@ Bytecode::CPU()
                     else
                         stk.push(abs(stk.pop()));
                     break;
-                case CMD_DRAW:
-					draw_screen(OP);
-                    break;
-                case CMD_FILL:
-					fill_screen(OP);
-                    break;
-                case CMD_CIRC:
-					draw_circ(OP, &stk);
-                    break;
-                case CMD_KOPM:
-                    draw_kopm();
-                    break;
-                case CMD_CAT:
-					draw_cat();
-                    break;
-                case CMD_MEM:
-                    draw_mem();
-                    break;
                 default:
 					error_state_ += ERROR_UNKNOWN_COM;
 					unknown_command_ = command;
@@ -271,7 +250,7 @@ Bytecode::CPU()
     OP = nullptr;
 }
 
-Bytecode::determine_status(Stack* stk)
+void Bytecode::determine_status(Stack* stk)
 {
 	assert(this && "You passed nullptr to determine_status");
 
@@ -300,7 +279,7 @@ Bytecode::determine_status(Stack* stk)
     fclose(error);
 }
 
-Bytecode::cmd_push_exe(int command, int i, Stack* stk, Rix* rix_struct, char* OP)
+void Bytecode::cmd_push_exe(int command, int i, Stack* stk, Rix* rix_struct, char* OP)
 {
     using namespace my_commands;
 
@@ -395,7 +374,7 @@ Bytecode::cmd_push_exe(int command, int i, Stack* stk, Rix* rix_struct, char* OP
 		error_state_ += ERROR_CMD_PUSH; //return ERROR_CMD_PUSH;
 }
 
-Bytecode::cmd_pop_exe(int command, int i, Stack *stk, Rix *rix_struct, char *OP)
+void Bytecode::cmd_pop_exe(int command, int i, Stack *stk, Rix *rix_struct, char *OP)
 {
 	assert(this && "You passed nullptr to cmd_pop_exe");
 	assert(stk && "You passed nullptr Stack");
@@ -523,7 +502,7 @@ Bytecode::cmd_pop_exe(int command, int i, Stack *stk, Rix *rix_struct, char *OP)
 		error_state_ += ERROR_CMD_POP; //return ERROR_CMD_POP;
 }
 
-Bytecode::cmd_compair_exe(int command, Stack* stk, int *i)
+void Bytecode::cmd_compair_exe(int command, Stack* stk, int *i)
 {
 	assert(this && "You passed nullptr to cmd_compair_exe");
 	assert(stk && "You passed nullptr Stack");
@@ -591,7 +570,8 @@ Bytecode::cmd_compair_exe(int command, Stack* stk, int *i)
         else
 			error_state_ += ERROR_COMPAIR;//return ERROR_COMPAIR;
     }
-	return 0;
+
+	return;
 }
 
 auto get_number(char** buffer) -> double
@@ -738,270 +718,6 @@ auto is_equal(double a, double b) -> bool
 		return true;
 
 	return diff <= ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
-}
-
-auto fill_screen(char* OP) -> void
-{
-	system("cls");
-    txCreateWindow(SIZEX, SIZEY);
-    txSetDefaults();
-
-    for (int y = 0; y < SIZEY; y++)
-        for (int x = 0; x < SIZEX; x++)
-    		txSetPixel(x, y, RGB(OP[0], OP[1], OP[2]));
-
-	return;
-}
-
-auto draw_screen(char* OP) -> void
-{
-	system("cls");
-    txCreateWindow(SIZEX, SIZEY);
-    txSetDefaults();
-
-    for (int y = 0; y < SIZEY; y++)
-        for (int x = 0; x < SIZEX; x++)
-            txSetPixel(x, y, RGB(OP[3 * (SIZEX * y + x)], OP[3 * (SIZEX * y + x) + 1], OP[3 * (SIZEX * y + x) + 2]));
-
-	return;
-}
-
-Bytecode::draw_circ(char* OP, Stack* stk)
-{
-	system("cls");
-
-    using namespace my_commands;
-	if(stk->get_cur_size() < 3)
-    {
-    	printf("not enough numbers to circ\n");
-        error_state_ += ERROR_STACK_SIZE;
-    }
-	else
-	{
-		int Radius   = static_cast<int>(stk->pop());
-    	int y_center = static_cast<int>(stk->pop());
-    	int x_center = static_cast<int>(stk->pop());
-
-		for (int y = 0; y < SIZEY; y++)
-        	for (int x = 0; x < SIZEX; x++)
-            	if (( pow((x - x_center), 2) + pow((y - y_center), 2) ) < pow(Radius, 2))
-                	txSetPixel(x, y, RGB(OP[3], OP[4], OP[5]));
-	}
-}
-
-auto draw_kopm() -> void
-{
-	system("cls");
-    txCreateWindow(SIZEX, SIZEY);
-    txSetDefaults();
-
-    txSetFillColor(RGB(100, 100, 230));
-    txFloodFill(5, 5);
-    txTextOut(100, 145, "KOPM ONE LOVE");
-
-    txSetColor(RGB(0, 0, 0), 1);
-    txLine(175, 160, 165, 145);
-    txLine(175, 160, 185, 145);
-    txArc(165, 140, 175, 150, 0, 182);
-    txArc(175, 140, 185, 150, 0, 182);
-
-    txSetColor(RGB(237, 19, 19), 1);
-    txLine(215, 140, 205, 125);
-    txLine(215, 140, 225, 125);
-    txArc(205, 120, 215, 130, 0, 182);
-    txArc(215, 120, 225, 130, 0, 182);
-
-    txSetColor(RGB(48, 217, 65), 1);
-    txLine(115, 100, 105, 85);
-    txLine(115, 100, 125, 85);
-    txArc(105, 80, 115, 90, 0, 182);
-    txArc(115, 80, 125, 90, 0, 182);
-
-	return;
-}
-
-auto draw_cat() -> void
-{
-	system("cls");
-    txCreateWindow(SIZEX, SIZEY);
-    txSetDefaults();
-
-    txSetFillColor(RGB(0, 100, 167));
-    txFloodFill(5 , 5);
-
-    txSetFillColor(RGB(125, 125, 125)); // öâåò òåëà
-    txEllipse(100, 70, 180, 180);       // ðèñóåì òåëî
-
-    txSetFillColor(RGB(0, 0, 0));       // ÷åðíûé öâåò
-    txEllipse(130, 90, 160, 150);       // ðèñóåâ âíóòðè òóëîâèùà
-
-    txSetFillColor(RGB(154, 148, 148)); // öâåò ãîëîâû
-    txCircle(140, 45, 25);              // ãîëîâà
-
-    txSetColor(RGB(0, 0, 0), 1);        // öâåò è òîëùèíà óñèêîâ
-    txLine(140, 55, 170, 45);           // ñàìè óñèêè
-    txLine(140, 55, 175, 53);
-    txLine(140, 55, 181, 61);
-    txLine(140, 55, 120, 45);
-    txLine(140, 55, 115, 53);
-    txLine(140, 55, 109, 61);
-
-    txSetFillColor(RGB(255, 255, 255)); // Öâåò ãëàç (áåëûé)
-    txEllipse(130, 35, 141, 50);        // ãëàç Ë
-    txEllipse(145, 35, 156, 50);        // ãëàç Ï
-
-    txLine(120, 30, 125, 10);           // óõî Ë
-    txLine(125, 10, 133, 23);
-
-    txSetFillColor(RGB(154, 148, 148)); // öâåò çàëèâêè óõà
-    txFloodFill(125, 12);               // çàëèâàåì óõî
-
-    txLine(150, 22, 158, 10);           // óõî Ï
-    txLine(158, 10, 160, 32);
-
-    txSetFillColor(RGB(154, 148, 148)); // öâåò çàëèâêè óõà
-    txFloodFill(157, 17);               // çàëèâàåì óõî
-
-    txSetFillColor(RGB(0, 0, 0));       // öâåò çàëèâêè çðà÷êà
-    txEllipse(132, 39, 137, 48);        // çðà÷îê Ë
-    txEllipse(147, 39, 152, 48);        // çðà÷îê Ï
-    txTextOut(180, 45, "Meow-meow!");
-
-	return;
-}
-
-auto draw_mem() -> void
-{
-	system("cls");
-    txCreateWindow(SIZEX, SIZEY);
-    txSetDefaults();
-
-    HDC mem = txLoadImage("Mem.bmp");
-    assert(mem);
-    txBitBlt(txDC(), 0, 0, SIZEX, SIZEY, mem, 0, 0);
-
-    srand(time(nullptr));
-    int number =  rand() % 6;
-
-	using namespace memes_names;
-
-    switch(number)
-    {
-        case DED_CODESTYLE:
-            txSetColor(RGB(0, 0, 0));
-
-            txTextOut(6, 110, "This guy didn't");
-            txTextOut(6, 123, " write the code");
-
-            txTextOut(160, 110, "Everything is ");
-            txTextOut(160, 123, "in one file here.");
-
-            txTextOut(8, 262, "This has no func-");
-            txTextOut(8, 275, "tions at all!");
-
-            txTextOut(160, 262, "Well fuck, let's ");
-            txTextOut(160, 275, "drop this project");
-
-            break;
-        case DED_ILAB_CLASSIC:
-            txSetColor(RGB(0, 0, 0));
-
-            txTextOut(6, 110, "No one answered");
-            txTextOut(6, 123, "\"yes\" or \"understand\"");
-
-            txTextOut(160, 110, "No questions asked");
-            txTextOut(160, 123, "at all");
-
-            txTextOut(8, 262, "Sunday is a ");
-            txTextOut(8, 275, "very busy day");
-
-            txTextOut(160, 262, "Most likely I will ");
-            txTextOut(160, 275, "have to cancel ILAB");
-
-            break;
-        case CAT:
-            txSetColor(RGB(0, 0, 0));
-
-            txTextOut(6, 110, "Poltorashka ran away");
-            txTextOut(6, 123, " when I stroked her");
-
-            txTextOut(160, 110, "Physical education 0 ");
-            txTextOut(160, 123, "visits for Semak");
-
-            txTextOut(8, 262, "BRS is not much ");
-            txTextOut(8, 275, "more than visits");
-
-            txTextOut(160, 262, "I go to the academy, ");
-            txTextOut(160, 275, "and I'll stroke the cats");
-
-            break;
-        case BOMONKA:
-            txSetColor(RGB(0, 0, 0));
-
-            txTextOut(6, 110, "I entered to the");
-            txTextOut(6, 123, " MIPT to get drunk");
-
-            txTextOut(160, 110, "These guys didnt call");
-            txTextOut(160, 123, "me to nk on friday");
-
-            txTextOut(8, 262, "These smokes have gone ");
-            txTextOut(8, 275, "without you for the umpteenth time");
-
-            txTextOut(160, 262, "Well fuck, I'd ra-");
-            txTextOut(160, 275, "ther go to the Bomonka");
-
-            break;
-        case DED_HOHLOV:
-            txSetColor(RGB(0, 0, 0));
-
-            txTextOut(6, 110, "I went to ded");
-            txTextOut(6, 123, "to coding");
-
-            txTextOut(160, 110, "There is not enough");
-            txTextOut(160, 123, " time for matan");
-
-            txTextOut(8, 262, "I almost never had time");
-            txTextOut(8, 275, "to go to physos");
-
-            txTextOut(160, 262, "Well fuck, I'll ");
-            txTextOut(160, 275, "transfer to Khokhlov");
-
-            break;
-        case CODING_BUGS:
-            txSetColor(RGB(0, 0, 0));
-
-            txTextOut(6, 110, "You are writing");
-            txTextOut(6, 123, " a project on ILAB");
-
-            txTextOut(160, 110, "There are a couple");
-            txTextOut(160, 123, " of hundred bugs");
-
-            txTextOut(8, 262, "For some reason, nothing");
-            txTextOut(8, 275, " else works there.");
-
-            txTextOut(160, 262, "Well fuck it, ");
-            txTextOut(160, 275, "I'm leaving with ILAB-");
-
-            break;
-        default:
-            txSetColor(RGB(0, 0, 0));
-
-            txTextOut(6, 110, "ERROR");
-            txTextOut(6, 123, "ERROR");
-
-            txTextOut(160, 110, "ERROR");
-            txTextOut(160, 123, "ERROR");
-
-            txTextOut(8, 262, "ERROR");
-            txTextOut(8, 275, "ERROR");
-
-            txTextOut(160, 262, "ERROR");
-            txTextOut(160, 275, "ERROR");
-            break;
-
-    }
-
-	return;
 }
 
 auto print_good(FILE* error) -> void
