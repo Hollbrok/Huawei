@@ -6,6 +6,7 @@ GCOV_FLAGS = -fprofile-arcs -ftest-coverage
 DISA_CODE_PATH = Disassembler
 ASM_CODE_PATH = Assembler
 STK_CODE_PATH = StackLib
+CPU_CODE_PATH = CPU
 
 TEST_PATH = tests
 
@@ -13,19 +14,29 @@ TEST_PATH = tests
 DISA_SOURCES = $(DISA_CODE_PATH)/dis_main.cpp $(DISA_CODE_PATH)/disassembler_func.cpp
 ASM_SOURCES  = $(ASM_CODE_PATH)/main_assem.cpp $(ASM_CODE_PATH)/assem_func.cpp
 STK_SOURCES  = $(STK_CODE_PATH)/stack_func.cpp
+CPU_SOURCES  = $(CPU_CODE_PATH)/main_cpu.cpp $(CPU_CODE_PATH)/cpu_functions.cpp
 
 DISA_OBJ = $(DISA_SOURCES:.cpp=.o)
 ASM_OBJ = $(ASM_SOURCES:.cpp=.o)
 STK_OBJ = $(STK_SOURCES:.cpp=.o)
+CPU_OBJ = $(CPU_SOURCES:.cpp=.o)
 
 OBJECTS = $(SOURCES:.c=.o)
 
 DISA_EXECUTABLE = disa
 ASM_EXECUTABLE  = asm
+CPU_EXECUTABLE  = cpu
 
 # -------------------------------
 
-all: asm disasm $(DISA_EXECUTABLE) $(ASM_EXECUTABLE)#cpu
+all: cpu asm disasm $(DISA_EXECUTABLE) $(ASM_EXECUTABLE)#cpu
+
+# -------------------------------
+
+cpu: $(CPU_SOURCES) $(CPU_OBJ) stk
+
+$(CPU_EXECUTABLE): $(CPU_OBJ)
+	$(CC) $(CPU_OBJ) $(STK_OBJ) -lm -lstdc++ -o $@
 
 # -------------------------------
 
