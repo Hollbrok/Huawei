@@ -76,7 +76,17 @@ valgrind : $(SOURCES)
 
 .PHONY: clean
 
+ 
+#DISA_CODE_PATH = Disassembler
+#ASM_CODE_PATH = Assembler
+#STK_CODE_PATH = StackLib
+#CPU_CODE_PATH = CPU
+
 clean: 
-		rm -rf *.o *.d *.txt *.holl
+	rm -rf *.o *.d *.txt *.holl
+	cd $(DISA_CODE_PATH) && rm -rf *.o *.d *.txt *.holl && cd ../
+	cd $(ASM_CODE_PATH) && rm -rf *.o *.d *.txt *.holl && cd ../
+	cd $(STK_CODE_PATH) && rm -rf *.o *.d *.txt *.holl && cd ../
+	cd $(CPU_CODE_PATH) && rm -rf *.o *.d *.txt *.holl && cd ../
 
 
