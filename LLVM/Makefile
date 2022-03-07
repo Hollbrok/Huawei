@@ -66,6 +66,6 @@ valgrind : $(SOURCES)
 .PHONY: clean
 
 clean: 
-		cd / && rm -rf *.o *.d *.gcda *.gcno *.gcov *.out *.dot *.jpg
+		rm -rf *.o *.d *.txt *.holl
 
 
