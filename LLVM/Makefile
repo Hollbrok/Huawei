@@ -82,8 +82,12 @@ valgrind : $(SOURCES)
 #STK_CODE_PATH = StackLib
 #CPU_CODE_PATH = CPU
 
+#DISA_EXECUTABLE = disa
+#ASM_EXECUTABLE  = asm
+#CPU_EXECUTABLE  = cpu
+
 clean: 
-	rm -rf *.o *.d *.txt *.holl
+	rm -rf *.o *.d *.txt *.holl $(DISA_EXECUTABLE) $(ASM_EXECUTABLE) $(CPU_EXECUTABLE)
 	cd $(DISA_CODE_PATH) && rm -rf *.o *.d *.txt *.holl && cd ../
 	cd $(ASM_CODE_PATH) && rm -rf *.o *.d *.txt *.holl && cd ../
 	cd $(STK_CODE_PATH) && rm -rf *.o *.d *.txt *.holl && cd ../
