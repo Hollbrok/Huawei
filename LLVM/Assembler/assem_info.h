@@ -45,8 +45,8 @@ private:
 
 	char*   data_   	= nullptr;  // pointer to buffer of code
     int     length_ 	= 0;        // length of buffer
-    int     terms_  	= 0;        // numbers of lexeme
-	int  	cur_size_	= 0;		// cur code size need for lexeme reading
+    int     terms_  	= 0;        // numbers of lexemes
+	int  	cur_size_	= 0;		// cur code size, need for lexeme reading
 
 public:
 

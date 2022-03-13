@@ -96,7 +96,7 @@ void Text::get_lines_pointer(Line *lines)
 
 		while ((data_[length] != '\n') && (length < length_file_))
 		{
-			if ((data_[length] == ';'))
+			if ((data_[length] == COMMENT_SYMBOL))
 			{
 				while (data_[length] != '\n')
 					length++;
@@ -157,8 +157,6 @@ Text::~Text()
 	length_file_  = -1;
 
 }
-
-//!
 
 Code::Code(Text* text_class, bool need_dump) :
 	data_(nullptr),
@@ -250,9 +248,70 @@ char Code::get_char(size_t number)
 	return data_[number];
 }
 
+/* return bytecode of register ("rax" ==> CMD_RAX) */
+static my_commands::Commands getReg(const char *reg)
+{
+	using namespace my_commands;
+
+	if (!strcmp(reg, "rax"))
+		return CMD_RAX;
+	else if (!strcmp(reg, "rbx"))
+		return CMD_RBX;
+	else if (!strcmp(reg, "rcx"))
+		return CMD_RCX;
+	else if (!strcmp(reg, "rdx"))
+		return CMD_RDX;
+	else 
+		return CMD_ERROR;
+}
+
+static my_commands::Commands getCommand(const char *cmd)
+{
+	using namespace my_commands;
+
+	if (!strcmp(cmd, "add"))
+		return CMD_ADD;
+	else if (!strcmp(cmd, "mul"))
+		return CMD_MUL;
+	else if (!strcmp(cmd, "div"))
+		return CMD_DIV;
+	else if (!strcmp(cmd, "sub"))
+		return CMD_SUB;
+	else if (!strcmp(cmd, "addi"))
+		return CMD_ADDI;
+	else if (!strcmp(cmd, "muli"))
+		return CMD_MULI;
+	else if (!strcmp(cmd, "divi"))
+		return CMD_DIVI;
+	else if (!strcmp(cmd, "subi"))
+		return CMD_SUBI;
+	else if (!strcmp(cmd, "sin"))
+		return CMD_SIN;
+	else if (!strcmp(cmd, "cos"))
+		return CMD_COS;
+	else if (!strcmp(cmd, "pow"))
+		return CMD_POW;
+	else if (!strcmp(cmd, "sqrt"))
+		return CMD_SQRT;
+	else if (!strcmp(cmd, "in"))
+		return CMD_IN;
+	else if (!strcmp(cmd, "out"))
+		return CMD_OUT;
+	else if (!strcmp(cmd, "del"))
+		return CMD_DEL;
+	else if (!strcmp(cmd, "abs"))
+		return CMD_ABS;
+	else if (!strcmp(cmd, "ln"))
+		return CMD_LN;
+	else if (!strcmp(cmd, "hlt"))
+		return CMD_HLT;
+	else return CMD_ERROR;
+}
+
 Bytecode::Bytecode(Code *code_class, bool need_debug) :
     error_state_(0),
-    bytecode_capacity_(0)
+    bytecode_capacity_(0),
+	unknown_command_(0)
 {
 	assert(code_class && "You passed nullptr(code_class) to Bytecode construct\n");
 	assert(this && "You passed nullptr(this) to Bytecode \n");
@@ -267,75 +326,75 @@ Bytecode::Bytecode(Code *code_class, bool need_debug) :
 	data_ = (double *) calloc(code_class->get_terms(), sizeof(double));
 	assert(data_ && "Can't calloc memory for data_\n");
 
-	unknown_command_ = (char*) calloc(MAX_SIZE_COMMAND, sizeof(char));
-	assert(unknown_command_ && "Can't calloc memory for unknown_command_\n");
-
-	double *specifiers = (double *)calloc(code_class->get_terms(), sizeof(double));
-	assert(specifiers);
-
 	int flags_size = 0;
 	code_class->set_cur_size(0); // cur_size = 0;
 
 	char *temp = (char *)calloc(MAX_SIZE_COMMAND, sizeof(char));
-	assert(temp);
+	assert(temp && "Can't calloc memory for tmp varaible");
 
-	for (int i = 0; i < code_class->get_terms(); i++)
+	FILE *assembler_txt = fopen("xxx", "w");
+	assert(assembler_txt && "Can't open file assembler_code.txt");
+
+    print_assem_id(assembler_txt)
+
+	for (int i = 0; i < code_class->get_terms(); i++, bytecode_capacity_++)
 	{
 		if (error_state_)
 		{
-            printf("error state\n");
+            fprintf(stderr, "Find error state.\n");
 			break;
         }
-		int j = 0;
-		get_lexeme(&j, code_class, temp);
 
-		code_class->set_cur_size(j + 1 + code_class->get_cur_size()); //code_class->cur_size += j + 1;
+		get_lexeme(code_class, temp);
 
-		if (!strcmp(temp, "push"))
+		if (!strcmp(temp, "add") || !strcmp(temp, "mul") || !strcmp(temp, "sub") || !strcmp(temp, "div")) /* commands with 3 regs args*/
 		{
-			data_[i] = CMD_PUSH;
-			IS_LAST_COMMAND_PUSH = 1;
-		}
-		else if (!strcmp(temp, "pop"))
-		{
-			data_[i] = CMD_POP;
-			//specifiers[flags_size] = S_NUMBER_SPEC;
-		}
+			Commands cmdType = getCommand(temp);
 
-		cmd_check(add, CMD_ADD)
-		cmd_check(mul, CMD_MUL)
-		cmd_check(div, CMD_DIV)
-		cmd_check(sub, CMD_SUB)
-		cmd_check(sin, CMD_SIN)
-		cmd_check(cos, CMD_COS)
-		cmd_check(pow, CMD_POW)
-		cmd_check(sqrt, CMD_SQRT)
-		cmd_check(in, CMD_IN)
-		cmd_check(out, CMD_OUT)
-		cmd_check(del, CMD_DEL)
-		cmd_check(abs, CMD_ABS)
-		cmd_check(circ, CMD_CIRC)
-		cmd_check(cat, CMD_CAT)
-		cmd_check(KOPM, CMD_KOPM)
-		cmd_check(ln, CMD_LN)
-		cmd_check(mem, CMD_MEM)
-		cmd_check(log10, CMD_LOG10)
-		cmd_check(log2, CMD_LOG2)
-		cmd_check(draw, CMD_DRAW)
-		cmd_check(fill, CMD_FILL)
-		cmd_check(ret, CMD_RET)
-		cmd_check(hlt, CMD_HLT)
+			get_lexeme(code_class, temp);
+			int destReg = static_cast<int>(getReg(temp));
 
-		rix_check(rax, CMD_RAX)
-		rix_check(rbx, CMD_RBX)
-		rix_check(rcx, CMD_RCX)
-		rix_check(rdx, CMD_RDX)
-		else if (IS_LAST_COMMAND_PUSH)
-		{
-			data_[i] = (double)std::atof(temp);
-			specifiers[flags_size++] = S_NUMBER_SPEC;
-			IS_LAST_COMMAND_PUSH = false;
+			get_lexeme(code_class, temp);
+			int src1Reg = static_cast<int>(getReg(temp));
+
+			get_lexeme(code_class, temp);
+			int src2Reg = static_cast<int>(getReg(temp));
+
+			fprintf(assembler_txt, "%d %d %d %d ", cmdType, destReg, src1Reg, src2Reg);
+
+			i += 3;
 		}
+		else if (!strcmp(temp, "addi") || !strcmp(temp, "muli") || !strcmp(temp, "subi") || !strcmp(temp, "divi")) /* commands with 3 regs args*/
+		{
+			Commands cmdType = getCommand(temp);
+
+			get_lexeme(code_class, temp);
+			int destReg = static_cast<int>(getReg(temp));
+
+			get_lexeme(code_class, temp);
+			int src1Reg = static_cast<int>(getReg(temp));
+
+			get_lexeme(code_class, temp);
+			double number = static_cast<double>(std::atof(temp));
+
+			fprintf(assembler_txt, "%d %d %d %lg ", cmdType, destReg, src1Reg, number);
+
+			i += 3;
+		}
+		cmd_check(sin, CMD_SIN);
+		cmd_check(cos, CMD_COS);
+		cmd_check(pow, CMD_POW);
+		cmd_check(sqrt, CMD_SQRT);
+		cmd_check(in, CMD_IN);
+		cmd_check(out, CMD_OUT);
+		cmd_check(del, CMD_DEL);
+		cmd_check(abs, CMD_ABS);
+		cmd_check(ln, CMD_LN);
+		cmd_check(log10, CMD_LOG10);
+		cmd_check(log2, CMD_LOG2);
+		cmd_check(ret, CMD_RET);
+		cmd_check(hlt, CMD_HLT);
+
 
 		transition_check(je, CMD_JE)
 		transition_check(jab, CMD_JAB)
@@ -345,10 +404,6 @@ Bytecode::Bytecode(Code *code_class, bool need_debug) :
 		transition_check(jb, CMD_JB)
 		transition_check(call, CMD_CALL)
 		transition_check(jmp, CMD_JMP)
-
-		bracket_check('[') // double
-		bracket_check('(') // char -- 0-255
-
 		else if (temp[strlen(temp) - 1] == ':')
 			data_[i] = CMD_LABEL;
 		else if (IS_LAST_COMMAND_JMP)
@@ -374,29 +429,19 @@ Bytecode::Bytecode(Code *code_class, bool need_debug) :
 		else
 		{
 			set_error_state(get_error_state() + error_process(i, temp));
-			//!
 			set_unknown_command(temp);
-            //strcpy(byte_struct->unknown_command, temp);
 			free(temp);
 			temp = nullptr;
 			break;
 		}
-
-		bytecode_capacity_++;
 	}
 
 	if (get_error_state())
 	{
-		free(specifiers);
-        specifiers = nullptr;
-
 		free(labels);
-        labels = nullptr;
-
         free(temp);
-        temp = nullptr;
 
-        FILE *assembler_txt = fopen("xxx.hol", "w");
+        FILE *assembler_txt = fopen("xxx", "w");
         assert(assembler_txt && "Can't open file assembler_code.txt");
 
         fprintf(assembler_txt, "666");
@@ -409,35 +454,8 @@ Bytecode::Bytecode(Code *code_class, bool need_debug) :
 
 	determine_status();
 
-	FILE *assembler_txt = fopen("xxx", "w");
-	assert(assembler_txt && "Can't open file assembler_code.txt");
-
-
-    print_assem_id(assembler_txt)
-
-    flags_size = 0;
-
-    for (int i = 0; i < bytecode_capacity_; i++)
-        if ((static_cast<int>(data_[i]) == CMD_POP) || (static_cast<int>(data_[i]) == CMD_PUSH))
-        {
-            fprintf(assembler_txt, "%lg ", data_[i++] + specifiers[flags_size++]);
-            fprintf(assembler_txt, "%lg ", data_[i]);
-        }
-        else
-            fprintf(assembler_txt, "%lg ", data_[i]);
-
-	free(specifiers);
-    specifiers = nullptr;
-
-	/*for (int y = 0; y < amount_labels; y++)
-		if (labels[y].name)
-			free(labels[y].name);*/
-
 	free(labels);
-	labels = nullptr;
-
 	free(temp);
-	temp = nullptr;
 
 	fclose(assembler_txt);
 }
@@ -465,6 +483,12 @@ void Bytecode::set_unknown_command(char* command)
 {
 	assert(this && "You passed nullptr(this) to set_unknown command");
 	assert(command && "You passed nullptr command\n");
+
+	if (unknown_command_ == nullptr)
+	{
+		unknown_command_ = (char*) calloc(MAX_SIZE_COMMAND, sizeof(char));
+		assert(unknown_command_ && "Can't calloc memory for unknown_command_\n");
+	}
 
 	for(int i = 0; i < strlen(command); i++)
 		unknown_command_[i] = command[i];
@@ -523,27 +547,30 @@ Bytecode::~Bytecode()
 	assert(this && "You passed nullptr to destruct\n");
 
 	free(data_);
-	data_ = nullptr;
+	//data_ = nullptr;
 
 	free(unknown_command_);
-	unknown_command_ = nullptr;
+	//unknown_command_ = nullptr;
 
-	bytecode_capacity_ = -1;
-	error_state_ = -1;
+	//bytecode_capacity_ = -1;
+	//error_state_ = -1;
 }
 
-inline void get_lexeme(int *j, Code *code_class, char *temp)
+void get_lexeme(Code *code_class, char *temp)
 {
-	for ((*j) = 0; (*j) < MAX_SIZE_COMMAND; (*j)++)
+	int j = 0;
+	for (j = 0; j < MAX_SIZE_COMMAND; j++)
 	{
-		if (code_class->get_char(*j + code_class->get_cur_size()) != ' ')
-			temp[*j] = code_class->get_char(*j + code_class->get_cur_size());
+		if (code_class->get_char(j + code_class->get_cur_size()) != ' ')
+			temp[j] = code_class->get_char(j + code_class->get_cur_size());
 		else
 		{
-			temp[*j] = '\0';
+			temp[j] = '\0';
 			break;
 		}
 	}
+
+	code_class->set_cur_size(code_class->get_cur_size() + j + 1); //code_class->cur_size += j + 1;
 }
 
 auto get_labels(Label *labels, Code *code_class) -> number_of_labels
@@ -562,8 +589,7 @@ auto get_labels(Label *labels, Code *code_class) -> number_of_labels
 
 	for (int i = 0; i < code_class->get_terms(); i++)
 	{
-		int iter = 0;
-		get_lexeme(&iter, code_class, temp);
+		get_lexeme(code_class, temp);
 
 		if (temp[strlen(temp) - 1] == ':')
 		{
@@ -573,71 +599,13 @@ auto get_labels(Label *labels, Code *code_class) -> number_of_labels
 
 			labels[cur_labels++].adress = i;
 		}
-		code_class->set_cur_size(code_class->get_cur_size() + iter + 1);
-		//code_struct->cur_size += iter + 1;
+
 	}
 
-	code_class->set_cur_size(0); // = 0;
+	code_class->set_cur_size(0);
 	free(temp);
 
 	return cur_labels; //int amount_labels = cur_labels;
-}
-
-    // [rbx] <- temp
-inline void bracket_exe(char spec, char *temp, Bytecode *byte_class, int *flags_size, double *specifiers, int i)
-{
-	using namespace my_commands;
-
-	int SPEC_NUMBER = 0;
-	int SPEC_REGIST = 0;
-
-	byte_class->set_error_state(byte_class->get_error_state() + define_specs(&SPEC_NUMBER, &SPEC_REGIST, spec));
-
-	if (isdigit(*(temp + 1)))
-	{
-		byte_class->set_int_to_data(i, std::atoi(temp + 1) );
-		//byte_struct->data[i] = std::atoi(temp + 1);
-		specifiers[(*flags_size)++] = SPEC_NUMBER;
-		IS_LAST_COMMAND_PUSH = false;
-	}
-	else if (strlen(temp) == 5)
-	{
-		char new_temp[] = {temp[1], temp[2], temp[3]};
-		if (!strncmp(new_temp, "rax", 3))
-		{
-			byte_class->set_int_to_data(i, CMD_RAX);
-			//byte_struct->data[i] = CMD_RAX;
-			specifiers[(*flags_size)++] = SPEC_REGIST;
-			IS_LAST_COMMAND_PUSH = false;
-		}
-		else if (!strncmp(new_temp, "rbx", 3))
-		{
-			byte_class->set_int_to_data(i, CMD_RBX);
-			//byte_struct->data[i] = CMD_RBX;
-			specifiers[(*flags_size)++] = SPEC_REGIST;
-			IS_LAST_COMMAND_PUSH = false;
-		}
-		else if (!strncmp(new_temp, "rcx", 3))
-		{
-			byte_class->set_int_to_data(i, CMD_RCX);//
-			//byte_struct->data[i] = CMD_RCX;
-			specifiers[(*flags_size)++] = SPEC_REGIST;
-			IS_LAST_COMMAND_PUSH = false;
-		}
-		else if (!strncmp(new_temp, "rdx", 3))
-		{
-			byte_class->set_int_to_data(i, CMD_RDX);
-			//byte_struct->data[i] = CMD_RDX;
-			specifiers[(*flags_size)++] = SPEC_REGIST;
-			IS_LAST_COMMAND_PUSH = false;
-		}
-	}
-	else
-	{
-		printf("Something went wrong in ()\n");
-		byte_class->set_error_state(byte_class->get_error_state() + ERROR_PROC_BRACKET);
-		//byte_struct->error_state += ERROR_PROC_BRACKET;
-	}
 }
 
 void Bytecode::set_int_to_data(size_t number, int digit)

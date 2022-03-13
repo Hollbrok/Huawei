@@ -17,9 +17,11 @@
 
 using number_of_labels = int;
 
+const char COMMENT_SYMBOL = ';';
+
 #define cmd_check(name, command)   \
 	else if (!strcmp(temp, #name)) \
-		data_[i] = command;
+		data_[i] = command
 
 #define rix_check(name, command)                  \
 	else if (!strcmp(temp, #name))                \
@@ -51,9 +53,9 @@ auto error_process(int i, char *temp) -> int;
 
 auto get_labels(Label *labels, Code *code_class) -> number_of_labels;
 
-inline void get_lexeme(int *j, Code *code_class, char *temp);
+void get_lexeme(Code *code_class, char *temp);
 
-inline void bracket_exe(char spec, char *temp, Bytecode *byte_class, int *flags_size, double *specifiers, int i);
+void bracket_exe(char spec, char *temp, Bytecode *byte_class, int *flags_size, double *specifiers, int i);
 
 auto define_specs(int *SPEC_NUMBER, int *SPEC_REGIST, char spec) -> int;
 
