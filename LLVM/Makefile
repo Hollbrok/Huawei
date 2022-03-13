@@ -1,6 +1,7 @@
 VALGRIND_FLAGS = --leak-check=full --show-leak-kinds=all
 
 CFLAGS = -g -MD -c
+LLVM_FLAGS = `llvm-config --cxxflags --ldflags --libs`
 GCOV_FLAGS = -fprofile-arcs -ftest-coverage
 
 DISA_CODE_PATH = Disassembler
@@ -11,7 +12,7 @@ CPU_CODE_PATH = CPU
 TEST_PATH = tests
 
 
-DISA_SOURCES = $(DISA_CODE_PATH)/dis_main.cpp $(DISA_CODE_PATH)/disassembler_func.cpp
+DISA_SOURCES = $(DISA_CODE_PATH)/dis_main.cpp $(DISA_CODE_PATH)/disassembler_func.cpp $(DISA_CODE_PATH)/GetLlvm.cpp
 ASM_SOURCES  = $(ASM_CODE_PATH)/main_assem.cpp $(ASM_CODE_PATH)/assem_func.cpp
 STK_SOURCES  = $(STK_CODE_PATH)/stack_func.cpp
 CPU_SOURCES  = $(CPU_CODE_PATH)/main_cpu.cpp $(CPU_CODE_PATH)/cpu_functions.cpp
@@ -43,7 +44,7 @@ $(CPU_EXECUTABLE): $(CPU_OBJ)
 disasm: $(DISA_SOURCES) $(DISA_OBJ) stk
 
 $(DISA_EXECUTABLE): $(DISA_OBJ)
-	$(CC) $(DISA_OBJ) $(STK_OBJ) -lstdc++ -o $@
+	$(CC)  $(LLVM_FLAGS) $(DISA_OBJ) $(STK_OBJ) -lstdc++ -o $@
 
 # -------------------------------
 
