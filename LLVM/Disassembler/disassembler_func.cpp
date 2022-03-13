@@ -13,15 +13,14 @@ auto make_bytecode(FILE* text, Bytecode* byte_struct) -> void
 
     fread(buffer_char, sizeof(char), file_length, text);
 
-    //fprintf(result, "\n");
+    //fprintf(disResult, "\n");
 
     int space_counter = 0;
     for(int index = 0; index < file_length; index++)
         if(buffer_char[index] == ' ')
             space_counter++;
     
-    //fprintf(result, "\n");
-    fprintf(stderr, "1\n");
+    //fprintf(disResult, "\n");
 
     byte_struct->bytecode_capacity = space_counter;
 
@@ -31,11 +30,12 @@ auto make_bytecode(FILE* text, Bytecode* byte_struct) -> void
     byte_struct->data     = (double*) calloc(byte_struct->bytecode_capacity, sizeof(double));
     assert(byte_struct->data);
 
-    //fprintf(result, "\n");
+    //fprintf(disResult, "\n");
 
 
     int ass_cur_size = 0;
-    fprintf(stderr, "2\n");
+
+    //fprintf("");
 
     while (*buffer_char)//&& (curLength != file_length))
     {
@@ -69,17 +69,15 @@ auto bytecode_destruct(Bytecode* byte_struct) -> void //перед free нужн
     byte_struct->bytecode_capacity = 0;
 }
 
-auto disassembler(Bytecode* byte_struct, FILE* result) -> void
+auto disassembler(Bytecode* byte_struct, FILE* disResult) -> void
 {
     assert(byte_struct);
-    assert(result);
-
-    fprintf(stderr, "result = %p\n", result);
+    assert(disResult);
 
     int skip_first  = -1;
     int skip_second = -1;
 
-    if (byte_struct->data[0] != 13417)
+    if (byte_struct->data[0] != ASSEM_ID)
     {
         fprintf(stderr, "Incorrect assem ID.\n");
         return;
@@ -96,228 +94,171 @@ auto disassembler(Bytecode* byte_struct, FILE* result) -> void
         
         fprintf(stderr, "TEST1\n");
 
-
-        if (get_byte(command, static_cast<int>(BIT_PUSH)) || get_byte(command, static_cast<int>(BIT_POP)))	// (command == CMD_PUSH) // PUSH
+        fprintf(stderr, "byte_struct->data[%d] = %d\n", i, command);
+        
+        switch(static_cast<int>(command))
         {
-            fprintf(stderr, "TEST2 \n");
-
-            char bracketType[3] = "  ";
-
-            fprintf(stderr, "5\n");
-
-            if (get_byte(command, BIT_D_OP))
-                strcpy(bracketType, "[]");//bracketType = "[]";
-            else if (get_byte(command, BIT_C_OP))
-                strcpy(bracketType, "()");//bracketType = "()";
-
-            fprintf(stderr, "6\n");
-
-            char pushOrPop[10] = "ERROR";
-
-            if (get_byte(command, BIT_PUSH))
-                strcpy(pushOrPop, "push");
-            else
-                strcpy(pushOrPop, "pop");
-
-            fprintf(stderr, "7\n");
-
-		    if (get_byte(command, BIT_NUMBER))
-                fprintf(result, "%s %c%lg%c\n",
-                pushOrPop,
-                bracketType[0] != ' ' ? bracketType[0] : ' ', 
-                byte_struct->data[i + 1],
-                bracketType[1] != ' ' ? bracketType[1] : ' ');
-		    else
-		    {
-		        int rix_number = static_cast<int>(byte_struct->data[i + 1]);
-                char rixChar = 'J';
-
-		        if (get_byte(rix_number, BIT_RAX))
-                    rixChar = 'a';
-		        else if (get_byte(rix_number, BIT_RBX))
-                    rixChar = 'b';
-		        else if (get_byte(rix_number, BIT_RCX))
-                    rixChar = 'c';
-		        else if (get_byte(rix_number, BIT_RDX))
-                    rixChar = 'd';
-    
-                fprintf(result, "%s %cr%cx%c\n",
-                pushOrPop,
-                bracketType[0] != ' ' ? bracketType[0] : ' ', 
-                rixChar,
-                bracketType[1] != ' ' ? bracketType[1] : ' ');
-            }
-		    fprintf(stderr, "5\n");
-            i++;
-        }
-        else
-        {
-            fprintf(stderr, "byte_struct->data[%d] = %d\n", i, command);
-            
-            switch(static_cast<int>(command))
+            case static_cast<int>(Commands::CMD_HLT):/*hlt*/
             {
-                case static_cast<int>(Commands::CMD_HLT):/*hlt*/
-                {
-                    fprintf(result, "hlt\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_PUSH):/*push(то есть error, так как если push, то сюда не должно дойти)*/
-                {
-                    FILE* error = fopen("ERROR_PRINT.txt", "ab");
-                    fprintf(error, "\tДата error'a : %s (чч/мм/гг)\n\n", define_date());
-                    fprintf(error, "ERROR in LINE %d", __LINE__);
-                    fclose(error);
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_ADD):/*add*/
-                {
-                    fprintf(result, "add\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_MUL):/*mul*/
-                {
-                    fprintf(result, "mul\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_DIV):/*div*/
-                {
-                    fprintf(result, "div\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_SUB):/*sub*/
-                {
-                    fprintf(result, "sub\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_SIN):/*sin*/
-                {
-                    fprintf(result, "sin\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_COS):/*cos*/
-                {
-                    fprintf(result, "cos\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_POW):/*pow*/
-                {
-                    fprintf(result, "pow\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_SQRT):/*sqrt*/
-                {
-                    fprintf(result, "sqrt\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_IN):/*in*/
-                {
-                    fprintf(stderr, "before IN\n");
-                    fprintf(result, "in\n");
-                    fprintf(stderr, "after IN is printfed\n");
-                    
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_OUT):/*out*/
-                {
-                    fprintf(result, "out\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_DEL):/*del*/
-                {
-                    fprintf(result, "del\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_LN):/*ln*/
-                {
-                    fprintf(result, "ln\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_LOG10):/*log10*/
-                {
-                    fprintf(result, "log10\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_LOG2):/*log2*/
-                {
-                    fprintf(result, "log2\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_JMP):/*23*/
-                {
-                    int number_command = static_cast<int>(byte_struct->data[i + 1]);
-                    fprintf(result, "jmp :LAB%d\n", number_command);
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_LABEL):/*22*/
-                {
-                    fprintf(result, "LAB%d:\n", i);
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_JE):/*24 ==*/
-                {
-                    int number_command = static_cast<int>(byte_struct->data[i + 1]);
-                    fprintf(result, "je :LAB%d\n", number_command);
-                    skip_first = i + 1;
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_JAB):/*25 !=*/
-                {
-                    int number_command = static_cast<int>(byte_struct->data[i + 1]);
-                    fprintf(result, "jab :LAB%d\n", number_command);
-                    skip_first = i + 1;
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_JAE):/*26 >=*/
-                {
-                    int number_command = static_cast<int>(byte_struct->data[i + 1]);
-                    fprintf(result, "jae :LAB%d\n", number_command);
-                    skip_first = i + 1;
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_JBE):/*27 <=*/
-                {
-                    int number_command = static_cast<int>(byte_struct->data[i + 1]);
-                    fprintf(result, "jbe :LAB%d\n", number_command);
-                    skip_first = i + 1;
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_JA):/*28 >*/
-                {
-                    int number_command = static_cast<int>(byte_struct->data[i + 1]);
-                    fprintf(result, "ja :LAB%d\n", number_command);
-                    skip_first = i + 1;
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_JB):/*29*/
-                {
-                    int number_command = static_cast<int>(byte_struct->data[i + 1]);
-                    fprintf(result, "jb :LAB%d\n", number_command);
-                    skip_first = i + 1;
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_RET):
-                {
-                    fprintf(result, "ret\n");
-                    break;
-                }
-                case static_cast<int>(Commands::CMD_CALL):
-                {
-                    int number_command = static_cast<int>(byte_struct->data[i + 1]);
-                    fprintf(result, "call :LAB%d\n", number_command);
-                    skip_first = i + 1;
-                    break;
-                }
-                default:
-                {
-                    FILE* error = fopen("[!]ERRORS.txt", "ab");
-                    fprintf(error, "\tДата error'a : %s (чч/мм/гг)\n\n", define_date());
-                    fprintf(error, "Disassemblers doesn't know this command..\n");
-                    fprintf(error, "bytecode[%d] = [%d]", i, static_cast<int>(byte_struct->data[i]));
-                    fclose(error);
-                }
+                fprintf(disResult, "hlt\n");
+                break;
             }
-            fprintf(stderr, "after else\n");
+            case static_cast<int>(Commands::CMD_PUSH):/*push(то есть error, так как если push, то сюда не должно дойти)*/
+            {
+                FILE* error = fopen("ERROR_PRINT.txt", "ab");
+                fprintf(error, "\tДата error'a : %s (чч/мм/гг)\n\n", define_date());
+                fprintf(error, "ERROR in LINE %d", __LINE__);
+                fclose(error);
+                break;
+            }
+            case static_cast<int>(Commands::CMD_ADD):/*add*/
+            {
+                fprintf(disResult, "add\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_MUL):/*mul*/
+            {
+                fprintf(disResult, "mul\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_DIV):/*div*/
+            {
+                fprintf(disResult, "div\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_SUB):/*sub*/
+            {
+                fprintf(disResult, "sub\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_SIN):/*sin*/
+            {
+                fprintf(disResult, "sin\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_COS):/*cos*/
+            {
+                fprintf(disResult, "cos\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_POW):/*pow*/
+            {
+                fprintf(disResult, "pow\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_SQRT):/*sqrt*/
+            {
+                fprintf(disResult, "sqrt\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_IN):/*in*/
+            {
+                fprintf(stderr, "before IN\n");
+                fprintf(disResult, "in\n");
+                fprintf(stderr, "after IN is printfed\n");
+                    
+                break;
+            }
+            case static_cast<int>(Commands::CMD_OUT):/*out*/
+            {
+                fprintf(disResult, "out\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_DEL):/*del*/
+            {
+                fprintf(disResult, "del\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_LN):/*ln*/
+            {
+                fprintf(disResult, "ln\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_LOG10):/*log10*/
+            {
+                fprintf(disResult, "log10\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_LOG2):/*log2*/
+            {
+                fprintf(disResult, "log2\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_JMP):/*23*/
+            {
+                int number_command = static_cast<int>(byte_struct->data[i + 1]);
+                fprintf(disResult, "jmp :LAB%d\n", number_command);
+                break;
+            }
+            case static_cast<int>(Commands::CMD_LABEL):/*22*/
+            {
+                fprintf(disResult, "LAB%d:\n", i);
+                break;
+            }
+            case static_cast<int>(Commands::CMD_JE):/*24 ==*/
+            {
+                int number_command = static_cast<int>(byte_struct->data[i + 1]);
+                fprintf(disResult, "je :LAB%d\n", number_command);
+                skip_first = i + 1;
+                break;
+            }
+            case static_cast<int>(Commands::CMD_JAB):/*25 !=*/
+            {
+                int number_command = static_cast<int>(byte_struct->data[i + 1]);
+                fprintf(disResult, "jab :LAB%d\n", number_command);
+                skip_first = i + 1;
+                break;
+            }
+            case static_cast<int>(Commands::CMD_JAE):/*26 >=*/
+            {
+                int number_command = static_cast<int>(byte_struct->data[i + 1]);
+                fprintf(disResult, "jae :LAB%d\n", number_command);
+                skip_first = i + 1;
+                break;
+            }
+            case static_cast<int>(Commands::CMD_JBE):/*27 <=*/
+            {
+                int number_command = static_cast<int>(byte_struct->data[i + 1]);
+                fprintf(disResult, "jbe :LAB%d\n", number_command);
+                skip_first = i + 1;
+                break;
+            }
+            case static_cast<int>(Commands::CMD_JA):/*28 >*/
+            {
+                int number_command = static_cast<int>(byte_struct->data[i + 1]);
+                fprintf(disResult, "ja :LAB%d\n", number_command);
+                skip_first = i + 1;
+                break;
+            }
+            case static_cast<int>(Commands::CMD_JB):/*29*/
+            {
+                int number_command = static_cast<int>(byte_struct->data[i + 1]);
+                fprintf(disResult, "jb :LAB%d\n", number_command);
+                skip_first = i + 1;
+                break;
+            }
+            case static_cast<int>(Commands::CMD_RET):
+            {
+                fprintf(disResult, "ret\n");
+                break;
+            }
+            case static_cast<int>(Commands::CMD_CALL):
+            {
+                int number_command = static_cast<int>(byte_struct->data[i + 1]);
+                fprintf(disResult, "call :LAB%d\n", number_command);
+                skip_first = i + 1;
+                break;
+            }
+            default:
+            {
+                FILE* error = fopen("[!]ERRORS.txt", "ab");
+                fprintf(error, "\tДата error'a : %s (чч/мм/гг)\n\n", define_date());
+                fprintf(error, "Disassemblers doesn't know this command..\n");
+                fprintf(error, "bytecode[%d] = [%d]", i, static_cast<int>(byte_struct->data[i]));
+                fclose(error);
+            }
         }
+        fprintf(stderr, "after else\n");
     }
 
     return;
@@ -335,7 +276,7 @@ auto get_number(char** buffer) -> double
         (*buffer)++;
     }
 
-    while (isdigit(**buffer) || (**buffer == ','))
+    while (isdigit(**buffer) || (**buffer == ',') || (**buffer == '.'))
         (*buffer)++;
 
 

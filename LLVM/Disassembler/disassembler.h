@@ -13,6 +13,9 @@
 #include <assert.h>
 #include <errno.h>
 
+#include <unistd.h>
+
+
 #include "disassembler_info.h"
 #include "../Commands.h"
 
@@ -22,7 +25,7 @@ auto make_bytecode(FILE* text, Bytecode* byte_struct) -> void;
 
 auto bytecode_destruct(Bytecode* byte_struct) -> void;
 
-auto disassembler(Bytecode* byte_struct, FILE* result) -> void;
+auto disassembler(Bytecode* byte_struct, FILE *disResult) -> void;
 
 auto ignore_spaces(char** buffer) -> void;
 
