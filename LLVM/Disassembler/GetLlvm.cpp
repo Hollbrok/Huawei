@@ -225,7 +225,7 @@ void getLlvm(Bytecode *bytecode, FILE *llResult)
     { 
         command = std::stof(name);
 
-        if (0)//(cmpCmd(command, CMD_ADD)) /* test LLVM IR generation without lazyfunctions */
+        if (cmpCmd(command, CMD_ADD)) /* test LLVM IR generation without lazyfunctions */
         {
             /* dest reg */
             input >> arg;
@@ -269,7 +269,7 @@ void getLlvm(Bytecode *bytecode, FILE *llResult)
             /* builder.getInt32Ty() === int (number of register) */
             llvm::FunctionType *CalleType = llvm::FunctionType::get(
                     builder.getVoidTy(),
-                    llvm::ArrayRef<llvm::Type *>( {builder.getInt32Ty(), builder.getInt32Ty()} ), 
+                    llvm::ArrayRef<llvm::Type *>( {builder.getInt32Ty(), builder.getInt32Ty(), builder.getInt32Ty()} ), 
                     false);
 
             std::string strCmdType = defineStrCmdType(curCmd);
@@ -303,7 +303,7 @@ void getLlvm(Bytecode *bytecode, FILE *llResult)
 
             llvm::FunctionType *CalleType = llvm::FunctionType::get(
                     builder.getVoidTy(),
-                    llvm::ArrayRef<llvm::Type *>( {builder.getInt32Ty(), builder.getInt64Ty()} ), 
+                    llvm::ArrayRef<llvm::Type *>( {builder.getInt32Ty(), builder.getInt32Ty(), builder.getInt64Ty()} ), 
                     false);
 
             std::string strCmdType = defineStrCmdType(curCmd);
