@@ -21,6 +21,90 @@ static inline bool cmpCmd(double dCmd, my_commands::Commands cmd)
     return static_cast<int>(dCmd) == cmd;
 }
 
+static void funcAdd(int destN, int src1N, int src2N)
+{
+    REG_FILE[destN] = REG_FILE[src1N] + REG_FILE[src2N];
+}
+
+static void *lazyFunctionCreator(const std::string &fnName) {
+  /*if (fnName == "do_exit") {
+    return reinterpret_cast<void *>(do_exit);
+  }
+  if (fnName == "do_push") {
+    return reinterpret_cast<void *>(do_push);
+  }
+  if (fnName == "do_pop") {
+    return reinterpret_cast<void *>(do_pop);
+  }
+  if (fnName == "do_add_s") {
+    return reinterpret_cast<void *>(do_add_s);
+  }
+  if (fnName == "do_sub_s") {
+    return reinterpret_cast<void *>(do_sub_s);
+  }
+  if (fnName == "do_mul_s") {
+    return reinterpret_cast<void *>(do_mul_s);
+  }
+  if (fnName == "do_div_s") {
+    return reinterpret_cast<void *>(do_div_s);
+  }
+  if (fnName == "do_neg") {
+    return reinterpret_cast<void *>(do_neg);
+  }*/
+  if (fnName == "do_add") {
+    return reinterpret_cast<void *>(funcAdd);
+  }/*
+  if (fnName == "do_sub") {
+    return reinterpret_cast<void *>(do_sub);
+  }
+  if (fnName == "do_mul") {
+    return reinterpret_cast<void *>(do_mul);
+  }
+  if (fnName == "do_div") {
+    return reinterpret_cast<void *>(do_div);
+  }
+  if (fnName == "do_addi") {
+    return reinterpret_cast<void *>(do_addi);
+  }
+  if (fnName == "do_subi") {
+    return reinterpret_cast<void *>(do_subi);
+  }
+  if (fnName == "do_muli") {
+    return reinterpret_cast<void *>(do_muli);
+  }
+  if (fnName == "do_divi") {
+    return reinterpret_cast<void *>(do_divi);
+  }
+  if (fnName == "do_b") {
+    return reinterpret_cast<void *>(do_b);
+  }
+  if (fnName == "do_ret") {
+    return reinterpret_cast<void *>(do_ret);
+  }
+  if (fnName == "do_bl") {
+    return reinterpret_cast<void *>(do_bl);
+  }
+  if (fnName == "do_beq") {
+    return reinterpret_cast<void *>(do_beq);
+  }
+  if (fnName == "do_bne") {
+    return reinterpret_cast<void *>(do_bne);
+  }
+  if (fnName == "do_bge") {
+    return reinterpret_cast<void *>(do_bge);
+  }
+  if (fnName == "do_blt") {
+    return reinterpret_cast<void *>(do_blt);
+  }
+  if (fnName == "do_read") {
+    return reinterpret_cast<void *>(do_read);
+  }
+  if (fnName == "do_write") {
+    return reinterpret_cast<void *>(do_write);
+  }*/
+  return nullptr;
+}
+
 void getLlvm(Bytecode *bytecode, FILE *llResult)
 {
     std::ifstream input;
@@ -56,6 +140,12 @@ void getLlvm(Bytecode *bytecode, FILE *llResult)
         llvm::FunctionType::get(builder.getVoidTy(), false);
     llvm::Function *mainFunc = 
         llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "main", module);
+     // entry:
+    llvm::BasicBlock *entryBB =
+      llvm::BasicBlock::Create(context, "entry", mainFunc);
+
+  builder.SetInsertPoint(entryBB);
+
 
     std::string name;
     std::string arg;
@@ -108,11 +198,43 @@ void getLlvm(Bytecode *bytecode, FILE *llResult)
 
     input >> name; /* ASSEM_ID */
 
+    fprintf(stderr, "1\n");
+
     while (input >> name)
     {
         command = std::stof(name);
 
-        if (0) /* sort */
+        input >> arg;
+        std::cout << arg;
+        // res
+        llvm::Value *destRegNum = llvm::ConstantInt::get(builder.getInt64Ty(),
+                                              (uint64_t)std::stoi(arg) - static_cast<int>(CMD_RAX));
+
+        input >> arg;
+        std::cout << " = " << arg;
+        llvm::Value *src1RegNum = llvm::ConstantInt::get(builder.getInt64Ty(),
+                                              (uint64_t)std::stoi(arg) - static_cast<int>(CMD_RAX));
+
+        input >> arg;
+        std::cout << " + " << arg << "\n";
+        llvm::Value *src2RegNum = llvm::ConstantInt::get(builder.getInt64Ty(),
+                                              (uint64_t)std::stoi(arg) - static_cast<int>(CMD_RAX));
+
+        llvm::FunctionType *CalleType = llvm::FunctionType::get(
+            builder.getVoidTy(),
+            llvm::ArrayRef<llvm::Type *>( {builder.getInt32Ty(), builder.getInt32Ty()} ), 
+            false);
+
+        builder.CreateCall(module->getOrInsertFunction(
+                       "funcAdd", CalleType),
+                   llvm::ArrayRef<llvm::Value *>({destRegNum, src1RegNum, src2RegNum}));
+        fprintf(stderr, "CREATE CALL\n");
+        continue;
+
+        
+
+        /*
+        if (0) // sort
         {
             input >> arg;
             std::cout << "sort " << arg << "\n";
@@ -228,8 +350,7 @@ void getLlvm(Bytecode *bytecode, FILE *llResult)
             continue;
         }
         
-        if (0) /*  BNE */
-        {
+        if (0) // BNE /        {
             input >> arg;
             std::cout << "if (" << arg;
             // reg1
@@ -250,7 +371,7 @@ void getLlvm(Bytecode *bytecode, FILE *llResult)
             continue;
         }
         
-        if (0) /* br */
+        if (0) // br
         {
             // name
             input >> arg;
@@ -267,34 +388,45 @@ void getLlvm(Bytecode *bytecode, FILE *llResult)
 
         builder.CreateBr(BBMap[name]);
         builder.SetInsertPoint(BBMap[name]);
+
+        */
+    
+       
     }
 
-    std::cout << "\n#[LLVM IR]:\n";
+    builder.CreateRet(llvm::ConstantInt::get(builder.getInt32Ty(), 0));
+
+    std::cout << "\n#[LLVM IR] DUMP:\n\n";
     std::string s;
     llvm::raw_string_ostream os(s);
     module->print(os, nullptr);
     os.flush();
     std::cout << s;
 
-    llvm::verifyFunction(*mainFunc);
-    std::cout << "\n#[Running code]\n";
-    llvm::ExecutionEngine *ee = llvm::EngineBuilder(std::unique_ptr<llvm::Module>(module)).create();
-    ee->InstallLazyFunctionCreator([&](const std::string &fnName) -> void * {
-        //if (fnName == "INSTR_dumpValue") { return reinterpret_cast<void *>(INSTR_dumpValue); }
-        //if (fnName == "INSTR_sort") { return reinterpret_cast<void *>(INSTR_sort); }
-        return nullptr;
-    });
-
-    ee->addGlobalMapping(regFile, (void*)REG_FILE);
-    ee->finalizeObject();
-    std::vector<llvm::GenericValue> noargs;
-    ee->runFunction(mainFunc, noargs);
-    std::cout << "#[Code was run]\n";
+    std::cout << "\n#[LLVM IR] DUMP END\n\n\n";
 
     for (int i = 0; i < REG_FILE_SIZE; i++)
-    {
-        std::cout << "[" << i << "] " << REG_FILE[i] << "\n";
-    }
+        REG_FILE[i] = 0;
+
+    std::cout << "#[LLVM EE] RUN\n";
+
+    llvm::InitializeNativeTarget();
+    llvm::InitializeNativeTargetAsmPrinter();
+
+    llvm::ExecutionEngine *ee =
+      llvm::EngineBuilder(std::unique_ptr<llvm::Module>(module)).create();
+    ee->InstallLazyFunctionCreator(lazyFunctionCreator);
+
+    ee->addGlobalMapping(regFile, (void *)REG_FILE);
+    ee->finalizeObject();
+    std::vector<llvm::GenericValue> noargs;
+
+    ee->runFunction(mainFunc, noargs);
+
+    std::cout << "#[LLVM EE] END\n";
+
+    for (int i = 0; i < REG_FILE_SIZE; i++)
+        std::cout << "[" << i << "] " <<REG_FILE[i] << "\n";
 
     return;
 }
