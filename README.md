@@ -76,8 +76,6 @@ Here are several articles and resources related to code revectorization, focusin
 
 ###########################
 
-Apologies for the earlier redundancies. Based on your request, I've curated a list of unique articles closely related to code revectorization, focusing on both binary file revectorization and compiler-based solutions:
-
 1. **Revec: Program Rejuvenation through Revectorization**
    - *Authors*: Charith Mendis, Ajay Jain, Paras Jain, Saman Amarasinghe
    - *Link*: [arXiv](https://arxiv.org/abs/1902.02816)
