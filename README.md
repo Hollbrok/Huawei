@@ -158,3 +158,27 @@ Based on your interest in articles related to code revectorization, particularly
    - *Summary*: This article explores compiler techniques aimed at reducing the size of executables through code compaction. While not exclusively focused on vectorization, the discussed techniques can indirectly impact the efficiency and performance of vectorized code by minimizing code size.
 
 These articles delve into various aspects of code revectorization, including the migration of platform-specific intrinsics, leveraging machine learning models for vectorization, and understanding compiler optimizations at the binary level. 
+
+#################################
+
+Based on your interest in compiler-based revectorization techniques, here are some articles that delve into this topic:
+
+1. **Auto-Vectorization in LLVM**
+   - *Link*: [LLVM Documentation](https://llvm.org/docs/Vectorizers.html)
+   - *Summary*: This documentation provides an overview of LLVM's auto-vectorization capabilities, detailing the Loop Vectorizer and the SLP Vectorizer, which are compiler passes designed to automatically convert scalar operations into vector operations to enhance performance.
+
+2. **Auto-Vectorization in GCC**
+   - *Link*: [GCC Vectorization Project](https://gcc.gnu.org/projects/tree-ssa/vectorization.html)
+   - *Summary*: This resource outlines GCC's approach to auto-vectorization, explaining how the compiler transforms eligible scalar operations into vector operations during the compilation process to optimize performance.
+
+3. **Compiler Auto-Vectorization with Imitation Learning**
+   - *Authors*: Charith Mendis, et al.
+   - *Link*: [PDF](https://charithmendis.com/assets/pdf/neurips19-vemal.pdf)
+   - *Summary*: This paper introduces a machine learning approach to compiler auto-vectorization, utilizing imitation learning to train a model that can predict vectorization decisions, thereby improving the efficiency of compiler optimization passes.
+
+4. **Revet: A Language and Compiler for Dataflow Threads**
+   - *Authors*: Alexander Rucker, et al.
+   - *Link*: [arXiv](https://arxiv.org/abs/2302.06124)
+   - *Summary*: This paper presents Revet, a programming language and compiler designed for dataflow threads, which can efficiently map threaded applications onto vectorized reconfigurable dataflow accelerators, enhancing performance through effective vectorization strategies.
+
+These resources provide insights into various compiler-based revectorization techniques and the advancements in auto-vectorization within modern compilers. 
