@@ -127,3 +127,34 @@ Here are several articles and resources related to code revectorization, focusin
     - *Summary*: This documentation provides an overview of optimization options available in GCC, including flags and settings that influence vectorization and other performance-related transformations.
 
 These articles provide a comprehensive overview of various aspects of code revectorization, encompassing both static binary transformations and compiler-based approaches. 
+
+###############################
+
+Based on your interest in articles related to code revectorization, particularly those focusing on retargeting platform-specific intrinsic functions and cross-region vectorization, here are some additional articles that align with these topics:
+
+1. **SIMD Everywhere Optimization from ARM NEON to RISC-V Vector Extensions**
+   - *Authors*: Ju-Hung Li, Jhih-Kuan Lin, Yung-Cheng Su, Chi-Wei Chu, Lai-Tak Kuok, Hung-Ming Lai, Chao-Lin Lee, Jenq-Kuen Lee
+   - *Link*: [arXiv](https://arxiv.org/abs/2309.16509)
+   - *Summary*: This paper discusses automating the migration of ARM NEON code to RISC-V Vector Extensions (RVV) using the "SIMD Everywhere" (SIMDe) tool. The authors enhance SIMDe to convert ARM NEON intrinsics to their corresponding RVV intrinsics, facilitating performance optimization across different architectures.
+
+2. **LLM-Vectorizer: LLM-based Verified Loop Vectorizer**
+   - *Authors*: Jubi Taneja, Avery Laird, Cong Yan, Madan Musuvathi, Shuvendu K. Lahiri
+   - *Link*: [arXiv](https://arxiv.org/abs/2406.04693)
+   - *Summary*: This paper introduces LLM-Vectorizer, a novel approach that leverages large language models (LLMs) to generate vectorized code from scalar programs. The method employs a finite-state machine multi-agent system and test-based feedback to produce high-performance vectorized code, achieving significant speedups compared to state-of-the-art compilers.
+
+3. **Unleashing the Hidden Power of Compiler Optimization on Binary Code Differences**
+   - *Authors*: [Not specified]
+   - *Link*: [ACM Digital Library](https://dl.acm.org/doi/10.1145/3453483.3454035)
+   - *Summary*: This paper systematically studies the effectiveness of compiler optimizations on binary code differences. It explores how compiler optimizations can impact binary difference analysis, which is crucial for tasks such as software vulnerability search and security patch analysis.
+
+4. **CcNav: Understanding Compiler Optimizations in Binary Code**
+   - *Authors*: [Not specified]
+   - *Link*: [arXiv](https://arxiv.org/pdf/2009.00956)
+   - *Summary*: CcNav is a tool designed to help users navigate and filter large binary codebases to identify and summarize compiler optimizations such as inlining, vectorization, loop unrolling, and code hoisting. It aids in correlating binary code with source code concepts, enhancing the understanding of compiler-induced transformations.
+
+5. **Compiler Techniques for Code Compaction**
+   - *Authors*: [Not specified]
+   - *Link*: [ACM Digital Library](https://dl.acm.org/doi/10.1145/349214.349233)
+   - *Summary*: This article explores compiler techniques aimed at reducing the size of executables through code compaction. While not exclusively focused on vectorization, the discussed techniques can indirectly impact the efficiency and performance of vectorized code by minimizing code size.
+
+These articles delve into various aspects of code revectorization, including the migration of platform-specific intrinsics, leveraging machine learning models for vectorization, and understanding compiler optimizations at the binary level. 
